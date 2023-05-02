@@ -366,7 +366,8 @@ class LMUFFT(nn.Module):
 
 
 import random
-from tqdm.notebook import tqdm
+#from tqdm.notebook import tqdm
+from tqdm import tqdm
 from matplotlib import pyplot as plt
 from sklearn.metrics import accuracy_score
 

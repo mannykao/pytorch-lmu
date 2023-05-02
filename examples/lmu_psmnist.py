@@ -454,7 +454,6 @@ if __name__ == "__main__":
 
 	SEED = 0
 	setSeed(SEED)
-
 	
 	transform = transforms.ToTensor()
 	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
