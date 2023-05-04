@@ -20,52 +20,6 @@ from torch.utils.data import Dataset, DataLoader
 from scipy.signal import cont2discrete
 
 
-def setSeed(seed):
-	""" Set all seeds to ensure reproducibility """
-	random.seed(seed)
-	np.random.seed(seed)
-	torch.manual_seed(seed)
-	torch.cuda.manual_seed(seed)
-	torch.cuda.manual_seed_all(seed)
-	torch.backends.cudnn.deterministic = True
-	torch.backends.cudnn.benchmark = False
-
-def initCuda():
-	# Connect to GPU
-	if torch.cuda.is_available():
-		DEVICE = "cuda"
-		# Clear cache if non-empty
-		torch.cuda.empty_cache()
-		# See which GPU has been allotted 
-		print(torch.cuda.get_device_name(torch.cuda.current_device()))
-	else:
-		DEVICE = "cpu"
-	return DEVICE	
-
-def ourargs(title:str):
-	parser = argparse.ArgumentParser(description=title,
-                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument('--batchsize', type=int, default=100, metavar='N',
-						help='input batch size for training (default: 100)')
-	parser.add_argument('--epochs', type=int, default=1, metavar='N',
-						help='number of epochs to train (default: 1)')
-	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
-						help='delay theta (default: 784)')
-	parser.add_argument('--trset', type = str, metavar="test<n>|train<n>",
-						default = 'test', help = 'dataset used for training and testing')
-	parser.add_argument('--t', type=int, default=784, metavar='N',
-						help='number of time steps (default: 784)')
-	parser.add_argument('--h', type=int, default=346, metavar='N',
-						help='number of hidden states (default: 346)')
-	parser.add_argument('--m', type=int, default=468, metavar='N',
-						help='number of memory states (default: 468)')
-	#N_t = 784
-	#N_h = 346 # dimension of the hidden state
-	#N_m = 468 # dimension of the memory
-
-	args = parser.parse_args()
-	return args
-
 # ### Data
 class psMNIST(Dataset):
 	""" Dataset that defines the psMNIST dataset, given the MNIST data and a fixed permutation """
@@ -119,7 +73,15 @@ class LMUCell(nn.Module):
 			Whether to learn the matrix B (default = False)
 	"""
 
-	def __init__(self, input_size, hidden_size, memory_size, theta, learn_a = False, learn_b = False, psmnist = False):
+	def __init__(self, 
+		input_size, 
+		hidden_size, 
+		memory_size, 
+		theta, 
+		learn_a = False, 
+		learn_b = False, 
+		psmnist = False
+	):
 		"""
 		Parameters:
 			input_size (int) : 
@@ -137,7 +99,6 @@ class LMUCell(nn.Module):
 			psmnist (boolean) :
 				Uses different parameter initializers when training on psMNIST (as specified in the paper)
 		"""
-		
 		super(LMUCell, self).__init__()
 
 		self.hidden_size = hidden_size
@@ -265,7 +226,15 @@ class LMU(nn.Module):
 			Whether to learn the matrix B (default = False)
 	"""
 
-	def __init__(self, input_size, hidden_size, memory_size, theta, learn_a = False, learn_b= False, psmnist = False):
+	def __init__(self, 
+		input_size, 
+		hidden_size, 
+		memory_size, 
+		theta, 
+		learn_a = False, 
+		learn_b= False, 
+		psmnist = False
+	):
 		"""
 		Parameters:
 			input_size (int) : 

@@ -16,7 +16,6 @@
 
 # In[27]:
 
-import argparse
 import numpy as np
 
 import torch
@@ -28,9 +27,10 @@ from scipy.signal import cont2discrete
 
 #
 # mck:
-from mkpyutils import fileutils
+#from mkpyutils.fileutils import my_path
 
 from src.lmu2 import *
+from src.lmuapp import *
 
 
 # ### Imports and Constants
@@ -46,7 +46,6 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 
 
-
 # In[34]:
 N_x = 1 # dimension of the input, a single pixel
 N_t = 784
@@ -60,132 +59,24 @@ LEARN_A = False
 LEARN_B = False
 
 
-
 # ### Model
-# In[36]:
-class Model(nn.Module):
+class LMUModel(nn.Module):
 	""" A simple model for the psMNIST dataset consisting of a single LMU layer and a single dense classifier """
 
 	def __init__(self, input_size, output_size, hidden_size, memory_size, theta, learn_a = False, learn_b = False):
-		super(Model, self).__init__()
+		super(LMUModel, self).__init__()
 		self.lmu = LMU(input_size, hidden_size, memory_size, theta, learn_a, learn_b, psmnist = True)
+		self.dropout = nn.Dropout(p = 0.5)
 		self.classifier = nn.Linear(hidden_size, output_size)
 
 	def forward(self, x):
 		_, (h_n, _) = self.lmu(x) # [batch_size, hidden_size]
+		#x = self.dropout(h_n)
 		output = self.classifier(h_n)
 		return output # [batch_size, output_size]
 
 
-# ### Functions
-
-# #### Utils
-
-# In[37]:
-def disp(img):
-	""" Displays an image """
-	if len(img.shape) == 3:
-		img = img.squeeze(0)
-	plt.imshow(img, cmap = "gray")
-	plt.axis("off")
-	plt.tight_layout()
-	plt.show()
-
-
-# In[38]:
-
-def dispSeq(seq, rows = 8):
-	""" Displays a sequence of pixels """
-	seq = seq.reshape(rows, -1) # divide the 1D sequence into `rows` rows for easy visualization
-	disp(seq)
-
-
-# #### Model
-# In[39]:
-
-def countParameters(model):
-	""" Counts and prints the number of trainable and non-trainable parameters of a model """
-	trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
-	frozen = sum(p.numel() for p in model.parameters() if not p.requires_grad)
-	print(f"The model has {trainable:,} trainable parameters and {frozen:,} frozen parameters")
-
-
-# In[40]:
-def train(model, loader, optimizer, criterion):
-	""" A single training epoch on the psMNIST data """
-
-	epoch_loss = 0
-	y_pred = []
-	y_true = []
-	
-	model.train()
-	for batch, labels in tqdm(loader):
-
-		torch.cuda.empty_cache()
-
-		batch = batch.to(DEVICE)
-		labels = labels.long().to(DEVICE)
-
-		optimizer.zero_grad()
-
-		output = model(batch)
-		loss = criterion(output, labels)
-		
-		loss.backward()
-		optimizer.step()
-
-		preds  = output.argmax(dim = 1)
-		y_pred += preds.tolist()
-		y_true += labels.tolist()
-		epoch_loss += loss.item()
-
-	# Loss
-	avg_epoch_loss = epoch_loss / len(loader)
-
-	# Accuracy
-	epoch_acc = accuracy_score(y_true, y_pred)
-
-	return avg_epoch_loss, epoch_acc
-
-
-# In[41]:
-def validate(model, loader, criterion):
-	""" A single validation epoch on the psMNIST data """
-
-	epoch_loss = 0
-	y_pred = []
-	y_true = []
-	
-	model.eval()
-	with torch.no_grad():
-		for batch, labels in tqdm(loader):
-
-			torch.cuda.empty_cache()
-
-			batch = batch.to(DEVICE)
-			labels = labels.long().to(DEVICE)
-
-			output = model(batch)
-			loss = criterion(output, labels)
-			
-			preds  = output.argmax(dim = 1)
-			y_pred += preds.tolist()
-			y_true += labels.tolist()
-			epoch_loss += loss.item()
-			
-	# Loss
-	avg_epoch_loss = epoch_loss / len(loader)
-
-	# Accuracy
-	epoch_acc = accuracy_score(y_true, y_pred)
-
-	return avg_epoch_loss, epoch_acc
-
-
 # ### Main
-# #### Data
-# In[42]:
-
 if __name__ == "__main__":
 	args = ourargs(title="Sequential LMU (Voelker)")
 
@@ -203,8 +94,7 @@ if __name__ == "__main__":
 	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
 	mnist_val   = datasets.MNIST("/content/", train = False, download = True, transform = transform)
 
-	permute_file = fileutils.my_path(__file__)/"examples/permutation.pt"	# created using torch.randperm(784)
-	perm = torch.load(permute_file).long() 
+	perm = load_permutation(__file__)
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm) 
 
@@ -219,7 +109,7 @@ if __name__ == "__main__":
 
 	# #### Model
 	# In[44]:
-	model = Model(
+	model = LMUModel(
 		input_size  = N_x,
 		output_size = N_c,
 		hidden_size = N_h, 
@@ -250,8 +140,8 @@ if __name__ == "__main__":
 	for epoch in range(N_epochs):
 		print(f"Epoch: {epoch+1:02}/{N_epochs:02}")
 
-		train_loss, train_acc = train(model, dl_train, optimizer, criterion)
-		val_loss, val_acc = validate(model, dl_val, criterion)
+		train_loss, train_acc = train(DEVICE, model, dl_train, optimizer, criterion)
+		val_loss, val_acc = validate(DEVICE, model, dl_val, criterion)
 
 		train_losses.append(train_loss)
 		train_accs.append(train_acc)
