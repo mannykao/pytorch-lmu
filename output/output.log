@@ -1,0 +1,78 @@
+lmu_psmnist, E=1
+----------------
+Train Loss: 0.690 | Train Acc: 78.18%
+Val. Loss: 0.368 |  Val. Acc: 89.37%
+
+Train Loss: 0.309 | Train Acc: 90.71%
+Val. Loss: 0.224 |  Val. Acc: 93.24%
+
+Train Loss: 0.203 | Train Acc: 93.84%
+Val. Loss: 0.169 |  Val. Acc: 94.94%
+
+Train Loss: 0.146 | Train Acc: 95.56%
+Val. Loss: 0.137 |  Val. Acc: 95.79%
+
+Train Loss: 0.115 | Train Acc: 96.43%
+Val. Loss: 0.126 |  Val. Acc: 95.96%
+
+Train Loss: 0.093 | Train Acc: 97.06%
+Val. Loss: 0.110 |  Val. Acc: 96.51%
+
+Train Loss: 0.076 | Train Acc: 97.58%
+Val. Loss: 0.116 |  Val. Acc: 96.35%
+
+Train Loss: 0.062 | Train Acc: 98.01%
+Val. Loss: 0.110 |  Val. Acc: 96.53%
+
+Train Loss: 0.052 | Train Acc: 98.38%
+Val. Loss: 0.097 |  Val. Acc: 97.02%
+
+Train Loss: 0.044 | Train Acc: 98.57%
+Val. Loss: 0.107 |  Val. Acc: 96.80%
+
+lmu_fft_psmnist, E=1
+--------------------
+Train Loss: 0.709 | Train Acc: 80.06%
+Val. Loss: 0.268 |  Val. Acc: 92.60%
+
+Train Loss: 0.268 | Train Acc: 92.16%
+Val. Loss: 0.178 |  Val. Acc: 94.85%
+
+Train Loss: 0.195 | Train Acc: 94.32%
+Val. Loss: 0.134 |  Val. Acc: 95.88%
+
+Train Loss: 0.159 | Train Acc: 95.34%
+Val. Loss: 0.112 |  Val. Acc: 96.54%
+
+Train Loss: 0.136 | Train Acc: 96.01%
+Val. Loss: 0.097 |  Val. Acc: 97.01%
+
+Train Loss: 0.119 | Train Acc: 96.46%
+Val. Loss: 0.089 |  Val. Acc: 97.30%
+
+Train Loss: 0.106 | Train Acc: 96.78%
+Val. Loss: 0.083 |  Val. Acc: 97.44%
+
+Train Loss: 0.098 | Train Acc: 97.10%
+Val. Loss: 0.076 |  Val. Acc: 97.63%
+
+Train Loss: 0.088 | Train Acc: 97.32%
+Val. Loss: 0.073 |  Val. Acc: 97.78%
+
+Train Loss: 0.081 | Train Acc: 97.54%
+Val. Loss: 0.072 |  Val. Acc: 97.75%
+
+Train Loss: 0.076 | Train Acc: 97.64%
+Val. Loss: 0.072 |  Val. Acc: 97.82%
+
+Train Loss: 0.069 | Train Acc: 97.81%
+Val. Loss: 0.067 |  Val. Acc: 98.02%
+
+Train Loss: 0.063 | Train Acc: 97.97%
+Val. Loss: 0.069 |  Val. Acc: 97.96%
+
+Train Loss: 0.064 | Train Acc: 97.95%
+Val. Loss: 0.070 |  Val. Acc: 97.97%
+
+Train Loss: 0.059 | Train Acc: 98.09%
+Val. Loss: 0.068 |  Val. Acc: 97.94%

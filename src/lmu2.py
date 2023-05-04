@@ -1,26 +1,13 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# # Legendre Memory Units
+"""
+Title: lmu2: extracted from the beginning of lmu_fft_psmnist.py. Same as src/lmu.py with 'psmnist' extensions.
+	
+Created on Sun Apr 23 17:44:29 2023
 
-#
-# Exported from lmu_fft_psmnist.ipynb. Minimium fixup to make it runable.
-#
-
-# ## Start
-# To reset the notebook, run from this point
-
-# In[26]:
-
-
-#get_ipython().run_line_magic('reset', '-f')
-
-
-# ## Imports
-
-# In[27]:
-
-
+@author: Manny Ko
+"""
+import argparse
+import random
 import numpy as np
 
 import torch
@@ -28,17 +15,64 @@ from torch import nn
 from torch import fft
 from torch.nn import init
 from torch.nn import functional as F
+from torch.utils.data import Dataset, DataLoader
 
 from scipy.signal import cont2discrete
 
-#
-# mck:
-from mkpyutils import fileutils
 
-# ## Functions
+def setSeed(seed):
+	""" Set all seeds to ensure reproducibility """
+	random.seed(seed)
+	np.random.seed(seed)
+	torch.manual_seed(seed)
+	torch.cuda.manual_seed(seed)
+	torch.cuda.manual_seed_all(seed)
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
 
-# In[28]:
+def initCuda():
+	# Connect to GPU
+	if torch.cuda.is_available():
+		DEVICE = "cuda"
+		# Clear cache if non-empty
+		torch.cuda.empty_cache()
+		# See which GPU has been allotted 
+		print(torch.cuda.get_device_name(torch.cuda.current_device()))
+	else:
+		DEVICE = "cpu"
+	return DEVICE	
 
+def ourargs(title:str):
+	parser = argparse.ArgumentParser(description=title,
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument('--batchsize', type=int, default=100, metavar='N',
+						help='input batch size for training (default: 100)')
+	parser.add_argument('--epochs', type=int, default=1, metavar='N',
+						help='number of epochs to train (default: 1)')
+	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
+						help='delay theta (default: 784)')
+	args = parser.parse_args()
+	return args
+
+# ### Data
+class psMNIST(Dataset):
+	""" Dataset that defines the psMNIST dataset, given the MNIST data and a fixed permutation """
+
+	def __init__(self, mnist, perm):
+		self.mnist = mnist # also a torch.data.Dataset object
+		self.perm  = perm
+
+	def __len__(self):
+		return len(self.mnist)
+
+	def __getitem__(self, idx):
+		img, label = self.mnist[idx]
+		unrolled = img.reshape(-1)
+		permuted = unrolled[self.perm]
+		permuted = permuted.reshape(-1, 1)
+		return permuted, label
+
+# ------------------------------------------------------------------------------
 
 def leCunUniform(tensor):
 	""" 
@@ -52,17 +86,26 @@ def leCunUniform(tensor):
 	limit = np.sqrt(3. / fan_in)
 	init.uniform_(tensor, -limit, limit) # fills the tensor with values sampled from U(-limit, limit)
 
-
-# ## Classes
-
-# ### Single LMU Cell/Unit
-
-# In[29]:
-
+# ------------------------------------------------------------------------------
 
 class LMUCell(nn.Module):
-	""" A single LMU Cell """
+	""" 
+	LMU Cell
 
+	Parameters:
+		input_size (int) : 
+			Size of the input vector (x_t)
+		hidden_size (int) : 
+			Size of the hidden vector (h_t)
+		memory_size (int) :
+			Size of the memory vector (m_t)
+		theta (int) :
+			The number of timesteps in the sliding window that is represented using the LTI system
+		learn_a (boolean) :
+			Whether to learn the matrix A (default = False)
+		learn_b (boolean) :
+			Whether to learn the matrix B (default = False)
+	"""
 
 	def __init__(self, input_size, hidden_size, memory_size, theta, learn_a = False, learn_b = False, psmnist = False):
 		"""
@@ -189,14 +232,26 @@ class LMUCell(nn.Module):
 
 		return h, m
 
-
-# ### LMU Layer
-
-# In[30]:
-
+# ------------------------------------------------------------------------------
 
 class LMU(nn.Module):
-	""" An LMU layer """
+	""" 
+	LMU layer
+
+	Parameters:
+		input_size (int) : 
+			Size of the input vector (x_t)
+		hidden_size (int) : 
+			Size of the hidden vector (h_t)
+		memory_size (int) :
+			Size of the memory vector (m_t)
+		theta (int) :
+			The number of timesteps in the sliding window that is represented using the LTI system
+		learn_a (boolean) :
+			Whether to learn the matrix A (default = False)
+		learn_b (boolean) :
+			Whether to learn the matrix B (default = False)
+	"""
 
 	def __init__(self, input_size, hidden_size, memory_size, theta, learn_a = False, learn_b= False, psmnist = False):
 		"""
@@ -259,13 +314,24 @@ class LMU(nn.Module):
 
 		return output, state # state is (h_n, m_n) where n = seq_len
 
-
-# ### LMU - FFT
-
-# In[31]:
-
+# ------------------------------------------------------------------------------
 
 class LMUFFT(nn.Module):
+	"""
+	Parallelized LMU Layer
+
+	Parameters:
+		input_size (int) : 
+			Size of the input vector (x_t)
+		hidden_size (int) : 
+			Size of the hidden vector (h_t)
+		memory_size (int) :
+			Size of the memory vector (m_t)
+		seq_len (int) :
+			Size of the sequence length (n)
+		theta (int) :
+			The number of timesteps in the sliding window that is represented using the LTI system
+	"""
 
 	def __init__(self, input_size, hidden_size, memory_size, seq_len, theta):
 
@@ -363,304 +429,3 @@ class LMUFFT(nn.Module):
 		h_n = h[:, -1, :] # [batch_size, hidden_size]
 
 		return h, h_n
-
-
-# ## Example: psMNIST
-
-# ### Imports and Constants
-
-# In[32]:
-
-
-import random
-#from tqdm.notebook import tqdm
-from tqdm import tqdm
-from matplotlib import pyplot as plt
-from sklearn.metrics import accuracy_score
-
-from torch import optim
-from torch.utils.data import Dataset, DataLoader
-from torchvision import datasets, transforms
-
-
-# In[34]:
-def setSeed(seed):
-	""" Set all seeds to ensure reproducibility """
-	random.seed(seed)
-	np.random.seed(seed)
-	torch.manual_seed(seed)
-	torch.cuda.manual_seed(seed)
-	torch.cuda.manual_seed_all(seed)
-	torch.backends.cudnn.deterministic = True
-	torch.backends.cudnn.benchmark = False
-
-
-# In[35]:
-N_x = 1 # dimension of the input, a single pixel
-N_t = 784
-N_h = 346 # dimension of the hidden state
-N_m = 468 # dimension of the memory
-N_c = 10 # number of classes 
-THETA = 784
-N_b = 100 # batch size
-N_epochs = 1	#15
-
-
-# ### Data
-
-# In[36]:
-
-
-class psMNIST(Dataset):
-	""" Dataset that defines the psMNIST dataset, given the MNIST data and a fixed permutation """
-
-	def __init__(self, mnist, perm):
-		self.mnist = mnist # also a torch.data.Dataset object
-		self.perm  = perm
-
-	def __len__(self):
-		return len(self.mnist)
-
-	def __getitem__(self, idx):
-		img, label = self.mnist[idx]
-		unrolled = img.reshape(-1)
-		permuted = unrolled[self.perm]
-		permuted = permuted.reshape(-1, 1)
-		return permuted, label
-
-
-# ### Model
-
-# In[37]:
-
-
-class Model(nn.Module):
-	""" A simple model for the psMNIST dataset consisting of a single LMUFFT layer and a single dense classifier """
-
-	def __init__(self, input_size, output_size, hidden_size, memory_size, seq_len, theta):
-		super(Model, self).__init__()
-		self.lmu_fft = LMUFFT(input_size, hidden_size, memory_size, seq_len, theta)
-		self.dropout = nn.Dropout(p = 0.5)
-		self.classifier = nn.Linear(hidden_size, output_size)
-
-	def forward(self, x):
-		_, h_n = self.lmu_fft(x) # [batch_size, hidden_size]
-		x = self.dropout(h_n)
-		output = self.classifier(x)
-		return output # [batch_size, output_size]
-
-
-# ### Functions
-
-# #### Utils
-
-# In[38]:
-
-
-def disp(img):
-	""" Displays an image """
-	if len(img.shape) == 3:
-		img = img.squeeze(0)
-	plt.imshow(img, cmap = "gray")
-	plt.axis("off")
-	plt.tight_layout()
-	plt.show()
-
-
-# In[39]:
-
-
-def dispSeq(seq, rows = 8):
-	""" Displays a sequence of pixels """
-	seq = seq.reshape(rows, -1) # divide the 1D sequence into `rows` rows for easy visualization
-	disp(seq)
-
-
-# #### Model
-
-# In[40]:
-
-
-def countParameters(model):
-	""" Counts and prints the number of trainable and non-trainable parameters of a model """
-	trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
-	frozen = sum(p.numel() for p in model.parameters() if not p.requires_grad)
-	print(f"The model has {trainable:,} trainable parameters and {frozen:,} frozen parameters")
-
-
-# In[41]:
-
-
-def train(model, loader, optimizer, criterion):
-	""" A single training epoch on the psMNIST data """
-
-	epoch_loss = 0
-	y_pred = []
-	y_true = []
-	
-	model.train()
-	for batch, labels in tqdm(loader):
-
-		torch.cuda.empty_cache()
-
-		batch = batch.to(DEVICE)
-		labels = labels.long().to(DEVICE)
-
-		optimizer.zero_grad()
-
-		output = model(batch)
-		loss = criterion(output, labels)
-		
-		loss.backward()
-		optimizer.step()
-
-		preds  = output.argmax(dim = 1)
-		y_pred += preds.tolist()
-		y_true += labels.tolist()
-		epoch_loss += loss.item()
-
-	# Loss
-	avg_epoch_loss = epoch_loss / len(loader)
-
-	# Accuracy
-	epoch_acc = accuracy_score(y_true, y_pred)
-
-	return avg_epoch_loss, epoch_acc
-
-
-# In[42]:
-
-
-def validate(model, loader, criterion):
-	""" A single validation epoch on the psMNIST data """
-
-	epoch_loss = 0
-	y_pred = []
-	y_true = []
-	
-	model.eval()
-	with torch.no_grad():
-		for batch, labels in tqdm(loader):
-
-			torch.cuda.empty_cache()
-
-			batch = batch.to(DEVICE)
-			labels = labels.long().to(DEVICE)
-
-			output = model(batch)
-			loss = criterion(output, labels)
-			
-			preds  = output.argmax(dim = 1)
-			y_pred += preds.tolist()
-			y_true += labels.tolist()
-			epoch_loss += loss.item()
-			
-	# Loss
-	avg_epoch_loss = epoch_loss / len(loader)
-
-	# Accuracy
-	epoch_acc = accuracy_score(y_true, y_pred)
-
-	return avg_epoch_loss, epoch_acc
-
-
-# ### Main
-
-# #### Data
-
-# In[43]:
-
-if __name__ == "__main__":
-	# In[33]:
-	# Connect to GPU
-	if torch.cuda.is_available():
-		DEVICE = "cuda"
-		# Clear cache if non-empty
-		torch.cuda.empty_cache()
-		# See which GPU has been allotted 
-		print(torch.cuda.get_device_name(torch.cuda.current_device()))
-	else:
-		DEVICE = "cpu"
-
-	SEED = 0
-	setSeed(SEED)
-
-	transform = transforms.ToTensor()
-	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
-	mnist_val   = datasets.MNIST("/content/", train = False, download = True, transform = transform)
-
-	permute_file = fileutils.my_path(__file__)/"permutation.pt"	# created using torch.randperm(784)
-	perm = torch.load(permute_file).long()
-	ds_train = psMNIST(mnist_train, perm)
-	ds_val   = psMNIST(mnist_val, perm)
-
-	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2, pin_memory = True)
-	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = True, num_workers = 2, pin_memory = True)
-
-	# In[44]:
-	# Example of the data
-	eg_img, eg_label = ds_train[0]
-	print("Label:", eg_label)
-	dispSeq(eg_img)
-
-	# #### Model
-	# In[45]:
-	model = Model(
-		input_size = N_x, 
-		output_size = N_c, 
-		hidden_size = N_h, 
-		memory_size = N_m, 
-		seq_len = N_t, 
-		theta = THETA
-	)
-	model = model.to(DEVICE)
-
-	# In[46]:
-	countParameters(model)
-
-	# #### Optimization
-	# In[47]:
-	optimizer = optim.Adam(params = model.parameters())
-
-	# In[48]:
-	criterion = nn.CrossEntropyLoss()
-	criterion = criterion.to(DEVICE)
-
-	# In[49]:
-	train_losses = []
-	train_accs = []
-	val_losses = []
-	val_accs = []
-
-	for epoch in range(N_epochs):
-		print(f"Epoch: {epoch+1:02}/{N_epochs:02}")
-
-		train_loss, train_acc = train(model, dl_train, optimizer, criterion)
-		val_loss, val_acc = validate(model, dl_val, criterion)
-
-		train_losses.append(train_loss)
-		train_accs.append(train_acc)
-		val_losses.append(val_loss)
-		val_accs.append(val_acc)
-
-		print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
-		print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
-		print()
-
-	# In[50]:
-	# Learning curves
-
-	plt.plot(range(N_epochs), train_losses)
-	plt.plot(range(N_epochs), val_losses)
-	plt.ylabel("Loss")
-	plt.xlabel("Epochs")
-	plt.legend(["Train", "Val."])
-	plt.show()
-
-	plt.plot(range(N_epochs), train_accs)
-	plt.plot(range(N_epochs), val_accs)
-	plt.ylabel("Accuracy")
-	plt.xlabel("Epochs")
-	plt.legend(["Train", "Val."])
-	plt.show()
-

@@ -3,6 +3,10 @@
 
 # # Legendre Memory Units
 
+#
+# Exported from lmu_psmnist.ipynb. Minimium fixup to make it runable.
+#
+
 # ## Start
 # To reset the notebook, run from this point
 
@@ -25,6 +29,10 @@ from torch.nn import init
 from torch.nn import functional as F
 
 from scipy.signal import cont2discrete
+
+#
+# mck:
+from mkpyutils import fileutils
 
 
 # ## Functions
@@ -290,7 +298,7 @@ N_m = 256 # dimension of the memory
 N_c = 10 # number of classes 
 THETA = N_t
 N_b = 100 # batch size
-N_epochs = 10
+N_epochs = 1 	#10
 LEARN_A = False
 LEARN_B = False
 
@@ -459,7 +467,8 @@ if __name__ == "__main__":
 	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
 	mnist_val   = datasets.MNIST("/content/", train = False, download = True, transform = transform)
 
-	perm = torch.load("permutation.pt").long() # created using torch.randperm(784)
+	permute_file = fileutils.my_path(__file__)/"permutation.pt"	# created using torch.randperm(784)
+	perm = torch.load(permute_file).long() 
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm) 
 
