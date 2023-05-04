@@ -163,19 +163,14 @@ def validate(model, loader, criterion):
 
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Parallel LMU with fft',
-                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument('--batchsize', type=int, default=100, metavar='N',
-						help='input batch size for training (default: 100)')
-	parser.add_argument('--epochs', type=int, default=1, metavar='N',
-						help='number of epochs to train (default: 1)')
-	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
-						help='delay theta (default: 784)')
-	args = parser.parse_args()
+	args = ourargs(title="Parallel LMU with fft")
 
 	THETA = args.theta 		#784
 	N_b = args.batchsize 	#100 # batch size
 	N_epochs = args.epochs 	#15
+	N_t = args.t 	 	 	#784
+	N_h = args.h 			#346 # dimension of the hidden state
+	N_m = args.m 			#468 # dimension of the memory
 
 	# Connect to GPU
 	DEVICE = initCuda()

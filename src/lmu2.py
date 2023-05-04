@@ -51,6 +51,18 @@ def ourargs(title:str):
 						help='number of epochs to train (default: 1)')
 	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
 						help='delay theta (default: 784)')
+	parser.add_argument('--trset', type = str, metavar="test<n>|train<n>",
+						default = 'test', help = 'dataset used for training and testing')
+	parser.add_argument('--t', type=int, default=784, metavar='N',
+						help='number of time steps (default: 784)')
+	parser.add_argument('--h', type=int, default=346, metavar='N',
+						help='number of hidden states (default: 346)')
+	parser.add_argument('--m', type=int, default=468, metavar='N',
+						help='number of memory states (default: 468)')
+	#N_t = 784
+	#N_h = 346 # dimension of the hidden state
+	#N_m = 468 # dimension of the memory
+
 	args = parser.parse_args()
 	return args
 
