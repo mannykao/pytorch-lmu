@@ -129,7 +129,7 @@ if __name__ == "__main__":
 		ds_train, ds_val = ds_val, ds_train
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2, pin_memory = True)
-	dl_val   = DataLoader(ds_val, batch_size = N_b*3, shuffle = True, num_workers = 2, pin_memory = True)
+	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 2, pin_memory = True)
 
 	# Example of the data
 	eg_img, eg_label = ds_train[0]

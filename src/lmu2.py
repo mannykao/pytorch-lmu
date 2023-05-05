@@ -163,16 +163,16 @@ class LMUCell(nn.Module):
 		i, j = np.meshgrid(Q, Q, indexing = "ij")
 
 		# Continuous
-		A = R * np.where(i < j, -1, (-1.0)**(i - j + 1))
+		A = R * np.where(i < j, -1, (-1.0)**(i - j + 1)) 	#HiPPO matrix
 		B = R * ((-1.0)**Q)
 		C = np.ones((1, memory_size))
 		D = np.zeros((1,))
 
 		# Convert to discrete
-		A, B, C, D, dt = cont2discrete(
+		A, B, C, D, dt = cont2discrete( 	#scipy.signal - nengo.filter_design has well documented implementation too - mck
 			system = (A, B, C, D), 
 			dt = 1.0, 
-			method = "zoh"
+			method = "zoh"		#zero-order hold
 		)
 		
 		return A, B
@@ -345,16 +345,16 @@ class LMUFFT(nn.Module):
 		i, j = np.meshgrid(Q, Q, indexing = "ij")
 
 		# Continuous
-		A = R * np.where(i < j, -1, (-1.0)**(i - j + 1))
+		A = R * np.where(i < j, -1, (-1.0)**(i - j + 1))	#HiPPO matrix
 		B = R * ((-1.0)**Q)
 		C = np.ones((1, self.memory_size))
 		D = np.zeros((1,))
 
 		# Convert to discrete
-		A, B, C, D, dt = cont2discrete(
+		A, B, C, D, dt = cont2discrete( 	#scipy.signal - nengo.filter_design has well documented implementation too - mck
 			system = (A, B, C, D), 
 			dt = 1.0, 
-			method = "zoh"
+			method = "zoh"		#zero-order hold
 		)
 
 		# To torch.tensor

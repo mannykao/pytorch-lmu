@@ -59,8 +59,10 @@ Val. Loss: 0.076 |  Val. Acc: 97.63%
 Train Loss: 0.088 | Train Acc: 97.32%
 Val. Loss: 0.073 |  Val. Acc: 97.78%
 
+Epoch: 10/10
 Train Loss: 0.081 | Train Acc: 97.54%
 Val. Loss: 0.072 |  Val. Acc: 97.75%
+-----
 
 Train Loss: 0.076 | Train Acc: 97.64%
 Val. Loss: 0.072 |  Val. Acc: 97.82%
