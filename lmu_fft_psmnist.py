@@ -48,7 +48,8 @@ N_c = 10 # number of classes
 THETA = 784
 N_b = 100 # batch size
 N_epochs = 1 	#15
-
+LEARN_A = False
+LEARN_B = False
 
 # ### Model
 class LMUModel(nn.Module):
@@ -124,8 +125,11 @@ if __name__ == "__main__":
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm)
 
+	if args.trset == 'test':
+		ds_train, ds_val = ds_val, ds_train
+
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2, pin_memory = True)
-	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = True, num_workers = 2, pin_memory = True)
+	dl_val   = DataLoader(ds_val, batch_size = N_b*3, shuffle = True, num_workers = 2, pin_memory = True)
 
 	# Example of the data
 	eg_img, eg_label = ds_train[0]
@@ -140,7 +144,9 @@ if __name__ == "__main__":
 			hidden_size = N_h, 
 			memory_size = N_m, 
 			seq_len = N_t, 
-			theta = THETA
+			theta = THETA,
+			learn_a = LEARN_A,
+			learn_b = LEARN_B
 		)
 	else:	
 		model = LMUFFTModel(

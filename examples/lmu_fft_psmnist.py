@@ -498,10 +498,12 @@ def train(model, loader, optimizer, criterion):
 	y_pred = []
 	y_true = []
 	
+	torch.cuda.empty_cache()	#mck: just once/epoch
+
 	model.train()
 	for batch, labels in tqdm(loader):
 
-		torch.cuda.empty_cache()
+#		torch.cuda.empty_cache()		#mck: don't do this in inner loop
 
 		batch = batch.to(DEVICE)
 		labels = labels.long().to(DEVICE)

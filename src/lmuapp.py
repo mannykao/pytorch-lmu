@@ -6,7 +6,7 @@ Created on Sun Apr 23 17:44:29 2023
 @author: Manny Ko
 """
 import argparse
-import random
+import random, time
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -78,10 +78,13 @@ def train(DEVICE, model, loader, optimizer, criterion):
 	y_pred = []
 	y_true = []
 	
+	torch.cuda.empty_cache()	#mck: just once/epoch
+	start = time.time()
+
 	model.train()
 	for batch, labels in tqdm(loader):
 
-		torch.cuda.empty_cache()
+#		torch.cuda.empty_cache()		#mck: don't do this in inner loop - saved 4.7s/iter (10k)
 
 		batch = batch.to(DEVICE)
 		labels = labels.long().to(DEVICE)
@@ -105,6 +108,9 @@ def train(DEVICE, model, loader, optimizer, criterion):
 	# Accuracy
 	epoch_acc = accuracy_score(y_true, y_pred)
 
+	end = time.time()
+	print(f"time:{(end - start):.2f} seconds")
+
 	return avg_epoch_loss, epoch_acc	
 
 def validate(DEVICE, model, loader, criterion):
@@ -112,12 +118,15 @@ def validate(DEVICE, model, loader, criterion):
 	epoch_loss = 0
 	y_pred = []
 	y_true = []
+
+	torch.cuda.empty_cache()	#mck: just once/epoch
+	start = time.time()
 	
 	model.eval()
 	with torch.no_grad():
 		for batch, labels in tqdm(loader):
 
-			torch.cuda.empty_cache()
+#			torch.cuda.empty_cache()		#mck: don't do this in inner loop - saved 26.8s/iter(60k)
 
 			batch = batch.to(DEVICE)
 			labels = labels.long().to(DEVICE)
@@ -135,6 +144,9 @@ def validate(DEVICE, model, loader, criterion):
 
 	# Accuracy
 	epoch_acc = accuracy_score(y_true, y_pred)
+
+	end = time.time()
+	print(f"time:{(end - start):.2f} seconds")
 
 	return avg_epoch_loss, epoch_acc
 	
