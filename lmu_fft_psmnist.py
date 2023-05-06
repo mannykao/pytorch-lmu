@@ -8,35 +8,28 @@
 #
 import argparse
 import numpy as np
+import random
+
+from matplotlib import pyplot as plt
+
 
 import torch
 from torch import nn
 from torch import fft
 from torch.nn import init
 from torch.nn import functional as F
-
-from scipy.signal import cont2discrete
-
-#
-# mck:
-#from mkpyutils.fileutils import my_path
-
-# ## Functions
-
-from src.lmu2 import *
-from src.lmuapp import *
-
-# ## Example: psMNIST
-# ### Imports and Constants
-# In[32]:
-
-import random
-
-from matplotlib import pyplot as plt
-
 from torch import optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
+
+from scipy.signal import cont2discrete
+#
+# mck:
+from datasets.mnist import mnist
+from mk_mlutils.pipeline import torchbatch
+
+from src.lmu2 import *
+from src.lmuapp import *
 
 
 # In[35]:
@@ -125,11 +118,19 @@ if __name__ == "__main__":
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm)
 
+	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU')
+	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU')
+
+	#ds_train, ds_test = seqmnist_train, seqmnist_test
+
 	if args.trset == 'test':
 		ds_train, ds_val = ds_val, ds_train
 
-	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2, pin_memory = True)
-	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 2, pin_memory = True)
+	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = True)
+	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = True)
+
+	#dl_train = torchbatch.getBatchAsync(DEVICE, )
+
 
 	# Example of the data
 	eg_img, eg_label = ds_train[0]

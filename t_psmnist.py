@@ -1,5 +1,10 @@
+"""
+Title: Load the bsd500 into BSD500Dataset.
+	
+Created on Fri Mar 3 17:44:29 2023
 
-
+@author: Manny Ko.
+"""
 import numpy as np
 from matplotlib import pyplot as plt
 
