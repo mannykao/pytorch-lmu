@@ -12,13 +12,28 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 
-from datasets.flowers import flowers
+#from datasets.flowers import flowers
 from datasets.mnist import mnist
+from datasets.utils.xforms import GreyToFloat
 
 from src.lmu2 import *
 from src.lmuapp import *
 
 kPlot=False
+
+def compare2datasets(dataset1, dataset2, kLabelsOnly=False) -> bool:
+	result = True
+	for idx, entry1 in enumerate(dataset1):
+		entry2 = dataset2[idx]
+		result &= (entry1[1] == entry2[1]) 	#comparse label
+
+		if not kLabelsOnly:
+			pix1 = entry1[0].numpy()
+			pix2 = entry2[0] #/255.
+			if not (np.isclose(pix1, pix2, atol=1e-5).all()):
+				print(f"[{idx}]: failed")
+				return False
+	return True
 
 
 if __name__ == "__main__":
@@ -30,29 +45,25 @@ if __name__ == "__main__":
 	perm = load_permutation(__file__)
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm) 
+	psmnist = ds_val
 
 	#2: use our SeqMNIST(permute='psLMU') which loads the same 'permutation.pt'
-	seqmnist = mnist.SeqMNIST(split="train", permute='psLMU')
+	seqmnist = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
+
 	img0, lab0 = seqmnist[0]
-	print("Label:", lab0)
+	print("Label:", lab0, "dtype", img0.dtype)
 	if kPlot: dispSeq(img0)
 
-	eg_img, eg_label = ds_train[0]
-	print("Label:", eg_label)
-	if kPlot: dispSeq(eg_img)
+	eg_img, eg_label = psmnist[0]
+	print("Label:", eg_label, "dtype", eg_img.numpy().dtype)
+	if kPlot: dispSeq(eg_img.numpy())
 
 	print(img0.shape, eg_img.shape)
 
 	pix1 = eg_img.numpy()
-	pix2 = img0/255.
+	pix2 = img0 #/255.
 	assert(np.isclose(pix1, pix2).all())
 
-	for idx, entry1 in enumerate(ds_train):
-		entry2 = seqmnist[idx]
-		assert(entry1[1] == entry2[1])
-
-		pix1 = entry1[0].numpy()
-		pix2 = entry2[0]/255.
-		if not (np.isclose(pix1, pix2, atol=1e-5).all()):
-			print(f"[{idx}]: failed")
+	#3: compare the 2 datasets entry by entry
+	compare2datasets(psmnist, seqmnist, kLabelsOnly=False)
 

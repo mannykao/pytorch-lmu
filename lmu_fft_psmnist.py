@@ -26,6 +26,7 @@ from scipy.signal import cont2discrete
 #
 # mck:
 from datasets.mnist import mnist
+from datasets.utils.xforms import GreyToFloat
 from mk_mlutils.pipeline import torchbatch
 
 from src.lmu2 import *
@@ -118,10 +119,10 @@ if __name__ == "__main__":
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm)
 
-	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU')
-	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU')
+	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
+	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
 
-	#ds_train, ds_test = seqmnist_train, seqmnist_test
+	ds_train, ds_test = seqmnist_train, seqmnist_test
 
 	if args.trset == 'test':
 		ds_train, ds_val = ds_val, ds_train
