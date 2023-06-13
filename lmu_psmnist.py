@@ -32,6 +32,7 @@ from scipy.signal import cont2discrete
 # mck:
 import datasets.utils.projconfig as projconfig
 from datasets.mnist import mnist
+from mk_mlutils.dataset import datasetutils
 from datasets.utils.xforms import GreyToFloat
 
 from src.lmu2 import *
@@ -78,10 +79,6 @@ class LMUModel(nn.Module):
 		output = self.classifier(h_n)
 		return output # [batch_size, output_size]
 
-def losses(train_loss:float, train_acc:float, val_loss:float, val_acc:float):
-	print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
-	print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
-
 
 # ### Main
 if __name__ == "__main__":
@@ -98,7 +95,7 @@ if __name__ == "__main__":
 	# Connect to GPU
 	DEVICE = initCuda()
 	print(f"{DEVICE}")
-	
+
 	SEED = 0
 	setSeed(SEED)
 
@@ -108,7 +105,7 @@ if __name__ == "__main__":
 	#1: use SeqMNIST or psMNIST
 	if args.d == 'seq':
 		print(f"SeqMNIST({mnist_dir})")
-		ds_train, ds_val = seqmnist_train, seqmnist_test
+		ds_train, ds_test = seqmnist_train, seqmnist_test
 	else:	
 		print(f"psMNIST({mnist_dir})")
 		transform = transforms.ToTensor()
@@ -120,7 +117,9 @@ if __name__ == "__main__":
 		ds_val   = psMNIST(mnist_val, perm)
 
 	if args.trset == 'test':
-		ds_train, ds_val = ds_val, ds_train
+		ds_train, ds_test = ds_test, ds_train
+
+	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.2, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2)
 	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = True, num_workers = 2)
@@ -169,7 +168,7 @@ if __name__ == "__main__":
 		train_loss, train_acc = train(DEVICE, model, dl_train, optimizer, criterion)
 
 		#validate interval?
-		if ((epoch+1) % N_validate) == 0:
+		if ((epoch+1) % N_validate) == 0: 	#validate using dl_val set
 			val_loss, val_acc = validate(DEVICE, model, dl_val, criterion)
 			last_validate = epoch
 
@@ -181,8 +180,9 @@ if __name__ == "__main__":
 		val_accs.append(val_acc)
 	#end of epochs	
 
-	if epoch > last_validate:
-		losses(train_loss, train_acc, val_loss, val_acc)
+	#use full test-set	
+	tst_loss, tst_acc = validate(DEVICE, model, dl_test, criterion)
+	losses(train_loss, train_acc, tst_loss, tst_acc)
 	print()
 
 	# In[49]:

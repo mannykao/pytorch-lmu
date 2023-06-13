@@ -26,6 +26,7 @@ from scipy.signal import cont2discrete
 import datasets.utils.projconfig as projconfig
 from datasets.mnist import mnist
 from datasets.utils.xforms import GreyToFloat
+from mk_mlutils.dataset import datasetutils
 from mk_mlutils.pipeline import torchbatch
 
 from src.lmu2 import *
@@ -106,6 +107,7 @@ if __name__ == "__main__":
 	N_t = args.t 	 	 	#784
 	N_h = args.h 			#346 # dimension of the hidden state
 	N_m = args.m 			#468 # dimension of the memory
+	N_validate = args.validate #validate interval, defaults to 5
 
 	# Connect to GPU
 	DEVICE = initCuda()
@@ -120,7 +122,7 @@ if __name__ == "__main__":
 	#1: use SeqMNIST or psMNIST
 	if args.d == 'seq':
 		print(f"SeqMNIST({mnist_dir})")
-		ds_train, ds_val = seqmnist_train, seqmnist_test
+		ds_train, ds_test = seqmnist_train, seqmnist_test
 	else:	
 		print(f"psMNIST({mnist_dir})")
 		transform = transforms.ToTensor()
@@ -130,11 +132,15 @@ if __name__ == "__main__":
 		perm = load_permutation(__file__)
 		ds_train = psMNIST(mnist_train, perm)
 		ds_val   = psMNIST(mnist_val, perm)
+		ds_test  = ds_val  	#TODO:
 
 	if args.trset == 'test':
-		ds_train, ds_val = ds_val, ds_train
+		ds_train, ds_test = ds_test, ds_train
+
+	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.2, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = True)
+	dl_test  = DataLoader(ds_test, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = False)
 	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = True)
 
 	#create out batch builder
@@ -181,21 +187,31 @@ if __name__ == "__main__":
 	train_accs = []
 	val_losses = []
 	val_accs = []
+	val_loss, val_acc = 0, 0
+	last_validate = -1
 
 	for epoch in range(N_epochs):
 		print(f"Epoch: {epoch+1:02}/{N_epochs:02}")
 
 		train_loss, train_acc = train(DEVICE, model, dl_train, optimizer, criterion)
-		val_loss, val_acc = validate(DEVICE, model, dl_val, criterion)
+
+		#validate interval?
+		if ((epoch+1) % N_validate) == 0:
+			val_loss, val_acc = validate(DEVICE, model, dl_val, criterion)
+			last_validate = epoch
 
 		train_losses.append(train_loss)
 		train_accs.append(train_acc)
 		val_losses.append(val_loss)
 		val_accs.append(val_acc)
 
-		print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
-		print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
-		print()
+		losses(train_loss, train_acc, val_loss, val_acc)
+	#end of epochs	
+
+	#use full test-set	
+	tst_loss, tst_acc = validate(DEVICE, model, dl_test, criterion)
+	losses(train_loss, train_acc, tst_loss, tst_acc)
+	print()
 
 	# Learning curves
 
