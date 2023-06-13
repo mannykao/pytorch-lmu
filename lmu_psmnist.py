@@ -17,6 +17,9 @@
 # In[27]:
 
 import numpy as np
+import random
+
+from matplotlib import pyplot as plt
 
 import torch
 from torch import nn
@@ -27,7 +30,9 @@ from scipy.signal import cont2discrete
 
 #
 # mck:
-#from mkpyutils.fileutils import my_path
+import datasets.utils.projconfig as projconfig
+from datasets.mnist import mnist
+from datasets.utils.xforms import GreyToFloat
 
 from src.lmu2 import *
 from src.lmuapp import *
@@ -35,10 +40,8 @@ from src.lmuapp import *
 
 # ### Imports and Constants
 # In[31]:
-import random
 #from tqdm.notebook import tqdm
 from tqdm import tqdm
-from matplotlib import pyplot as plt
 from sklearn.metrics import accuracy_score
 
 from torch import optim
@@ -75,28 +78,49 @@ class LMUModel(nn.Module):
 		output = self.classifier(h_n)
 		return output # [batch_size, output_size]
 
+def losses(train_loss:float, train_acc:float, val_loss:float, val_acc:float):
+	print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
+	print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
+
 
 # ### Main
 if __name__ == "__main__":
-	args = ourargs(title="Sequential LMU (Voelker)")
+	title = "Sequential LMU (Voelker)"
+	mnist_dir = projconfig.getMNISTFolder()
+	print(f"{title}")
 
+	args = ourargs(title=title)
 	THETA = args.theta 		#784
 	N_b = args.batchsize 	#100 # batch size
-	N_epochs = args.epochs 	#1
+	N_epochs = args.epochs 	#10 should be enough, defaults to 1
+	N_validate = args.validate #validate interval, defaults to 5
 
 	# Connect to GPU
 	DEVICE = initCuda()
-
+	print(f"{DEVICE}")
+	
 	SEED = 0
 	setSeed(SEED)
-	
-	transform = transforms.ToTensor()
-	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
-	mnist_val   = datasets.MNIST("/content/", train = False, download = True, transform = transform)
 
-	perm = load_permutation(__file__)
-	ds_train = psMNIST(mnist_train, perm)
-	ds_val   = psMNIST(mnist_val, perm) 
+	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
+	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
+
+	#1: use SeqMNIST or psMNIST
+	if args.d == 'seq':
+		print(f"SeqMNIST({mnist_dir})")
+		ds_train, ds_val = seqmnist_train, seqmnist_test
+	else:	
+		print(f"psMNIST({mnist_dir})")
+		transform = transforms.ToTensor()
+		mnist_train = datasets.MNIST(mnist_dir, train = True, download = True, transform = transform)
+		mnist_val   = datasets.MNIST(mnist_dir, train = False, download = True, transform = transform)
+
+		perm = load_permutation(__file__)
+		ds_train = psMNIST(mnist_train, perm)
+		ds_val   = psMNIST(mnist_val, perm)
+
+	if args.trset == 'test':
+		ds_train, ds_val = ds_val, ds_train
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2)
 	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = True, num_workers = 2)
@@ -105,7 +129,7 @@ if __name__ == "__main__":
 	# Example of the data
 	eg_img, eg_label = ds_train[0]
 	print("Label:", eg_label)
-	dispSeq(eg_img)
+	#dispSeq(eg_img)
 
 	# #### Model
 	# In[44]:
@@ -136,21 +160,30 @@ if __name__ == "__main__":
 	train_accs = []
 	val_losses = []
 	val_accs = []
+	val_loss, val_acc = 0, 0
+	last_validate = -1
 
 	for epoch in range(N_epochs):
 		print(f"Epoch: {epoch+1:02}/{N_epochs:02}")
 
 		train_loss, train_acc = train(DEVICE, model, dl_train, optimizer, criterion)
-		val_loss, val_acc = validate(DEVICE, model, dl_val, criterion)
+
+		#validate interval?
+		if ((epoch+1) % N_validate) == 0:
+			val_loss, val_acc = validate(DEVICE, model, dl_val, criterion)
+			last_validate = epoch
+
+		losses(train_loss, train_acc, val_loss, val_acc)
 
 		train_losses.append(train_loss)
 		train_accs.append(train_acc)
 		val_losses.append(val_loss)
 		val_accs.append(val_acc)
+	#end of epochs	
 
-		print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
-		print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
-		print()
+	if epoch > last_validate:
+		losses(train_loss, train_acc, val_loss, val_acc)
+	print()
 
 	# In[49]:
 	# Learning curves

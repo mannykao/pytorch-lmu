@@ -1,4 +1,4 @@
-lmu_psmnist, E=1
+lmu_psmnist, E=10
 ----------------
 Train Loss: 0.690 | Train Acc: 78.18%
 Val. Loss: 0.368 |  Val. Acc: 89.37%
@@ -30,7 +30,7 @@ Val. Loss: 0.097 |  Val. Acc: 97.02%
 Train Loss: 0.044 | Train Acc: 98.57%
 Val. Loss: 0.107 |  Val. Acc: 96.80%
 
-lmu_fft_psmnist, E=1 60k
+lmu_fft_psmnist, E=10 60k
 ------------------------
 Train Loss: 0.709 | Train Acc: 80.06%
 Val. Loss: 0.268 |  Val. Acc: 92.60%
@@ -79,8 +79,8 @@ Val. Loss: 0.070 |  Val. Acc: 97.97%
 Train Loss: 0.059 | Train Acc: 98.09%
 Val. Loss: 0.068 |  Val. Acc: 97.94%
 
-lmu_fft_psmnist, 10k
---------------------
+lmu_fft_psmnist, E=10 10k
+-------------------------
 Train Loss: 1.926 | Train Acc: 48.34%
 Val. Loss: 1.036 |  Val. Acc: 76.26%
 
@@ -90,3 +90,43 @@ Val. Loss: 0.494 |  Val. Acc: 86.21%
 Epoch: 10/10
 Train Loss: 0.198 | Train Acc: 94.00%
 Val. Loss: 0.250 |  Val. Acc: 92.67%
+----
+Epoch: 01/10
+Train Loss: 1.926 | Train Acc: 48.34%
+Val. Loss: 1.036 |  Val. Acc: 76.26%
+
+Epoch: 02/10
+Train Loss: 0.665 | Train Acc: 81.55%
+Val. Loss: 0.491 |  Val. Acc: 86.16%
+
+Epoch: 03/10
+Train Loss: 0.444 | Train Acc: 87.19%
+Val. Loss: 0.401 |  Val. Acc: 88.48%
+
+Epoch: 04/10
+Train Loss: 0.374 | Train Acc: 88.95%
+Val. Loss: 0.363 |  Val. Acc: 89.40%
+
+Epoch: 05/10
+Train Loss: 0.328 | Train Acc: 90.44%
+Val. Loss: 0.336 |  Val. Acc: 90.22%
+
+Epoch: 06/10
+Train Loss: 0.298 | Train Acc: 91.17%
+Val. Loss: 0.311 |  Val. Acc: 90.94%
+
+Epoch: 07/10
+Train Loss: 0.265 | Train Acc: 92.34%
+Val. Loss: 0.293 |  Val. Acc: 91.41%
+
+Epoch: 08/10
+Train Loss: 0.242 | Train Acc: 92.86%
+Val. Loss: 0.278 |  Val. Acc: 91.88%
+
+Epoch: 09/10
+Train Loss: 0.220 | Train Acc: 93.50%
+Val. Loss: 0.265 |  Val. Acc: 92.29%
+
+Epoch: 10/10
+Train Loss: 0.198 | Train Acc: 94.05%
+Val. Loss: 0.253 |  Val. Acc: 92.59%

@@ -13,6 +13,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 
 #from datasets.flowers import flowers
+import datasets.utils.projconfig as projconfig
 from datasets.mnist import mnist
 from datasets.utils.xforms import GreyToFloat
 
@@ -37,9 +38,10 @@ def compare2datasets(dataset1, dataset2, kLabelsOnly=False) -> bool:
 
 
 if __name__ == "__main__":
+	mnist_dir = projconfig.getMNISTFolder()	#"/content/"
 	transform = transforms.ToTensor()
-	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
-	mnist_val   = datasets.MNIST("/content/", train = False, download = True, transform = transform)
+	mnist_train = datasets.MNIST(mnist_dir, train = True, download = True, transform = transform)
+	mnist_val   = datasets.MNIST(mnist_dir, train = False, download = True, transform = transform)
 
 	#1: use lmu's psMNIST
 	perm = load_permutation(__file__)

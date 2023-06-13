@@ -169,7 +169,8 @@ class LMUCell(nn.Module):
 		D = np.zeros((1,))
 
 		# Convert to discrete
-		A, B, C, D, dt = cont2discrete( 	#scipy.signal - nengo.filter_design has well documented implementation too - mck
+	 	#scipy.signal - nengo.filter_design has well documented implementation too - mck
+		A, B, C, D, dt = cont2discrete(
 			system = (A, B, C, D), 
 			dt = 1.0, 
 			method = "zoh"		#zero-order hold

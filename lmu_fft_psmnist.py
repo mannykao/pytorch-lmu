@@ -6,12 +6,10 @@
 #
 # Exported from lmu_fft_psmnist.ipynb. Rewritten for more reuse and enhancements.
 #
-import argparse
 import numpy as np
 import random
 
 from matplotlib import pyplot as plt
-
 
 import torch
 from torch import nn
@@ -25,6 +23,7 @@ from torchvision import datasets, transforms
 from scipy.signal import cont2discrete
 #
 # mck:
+import datasets.utils.projconfig as projconfig
 from datasets.mnist import mnist
 from datasets.utils.xforms import GreyToFloat
 from mk_mlutils.pipeline import torchbatch
@@ -96,8 +95,11 @@ class LMUFFTModel(nn.Module):
 
 
 if __name__ == "__main__":
-	args = ourargs(title="Parallel LMU with fft")
+	title = "Parallel LMU with fft"
+	mnist_dir = projconfig.getMNISTFolder()	#"/content/"
+	print(f"{title}")
 
+	args = ourargs(title=title)
 	THETA = args.theta 		#784
 	N_b = args.batchsize 	#100 # batch size
 	N_epochs = args.epochs 	#15
@@ -107,22 +109,27 @@ if __name__ == "__main__":
 
 	# Connect to GPU
 	DEVICE = initCuda()
+	print(f"{DEVICE}")
 
 	SEED = 0
 	setSeed(SEED)
 
-	transform = transforms.ToTensor()
-	mnist_train = datasets.MNIST("/content/", train = True, download = True, transform = transform)
-	mnist_val   = datasets.MNIST("/content/", train = False, download = True, transform = transform)
-
-	perm = load_permutation(__file__)
-	ds_train = psMNIST(mnist_train, perm)
-	ds_val   = psMNIST(mnist_val, perm)
-
 	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
 	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
 
-	ds_train, ds_test = seqmnist_train, seqmnist_test
+	#1: use SeqMNIST or psMNIST
+	if args.d == 'seq':
+		print(f"SeqMNIST({mnist_dir})")
+		ds_train, ds_val = seqmnist_train, seqmnist_test
+	else:	
+		print(f"psMNIST({mnist_dir})")
+		transform = transforms.ToTensor()
+		mnist_train = datasets.MNIST(mnist_dir, train = True, download = True, transform = transform)
+		mnist_val   = datasets.MNIST(mnist_dir, train = False, download = True, transform = transform)
+
+		perm = load_permutation(__file__)
+		ds_train = psMNIST(mnist_train, perm)
+		ds_val   = psMNIST(mnist_val, perm)
 
 	if args.trset == 'test':
 		ds_train, ds_val = ds_val, ds_train
@@ -130,8 +137,8 @@ if __name__ == "__main__":
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = True)
 	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = True)
 
-	#dl_train = torchbatch.getBatchAsync(DEVICE, )
-
+	#create out batch builder
+	#dl_train = batch.Bagging(ds_train, batchsize=N_b, shuffle=False)
 
 	# Example of the data
 	eg_img, eg_label = ds_train[0]

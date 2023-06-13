@@ -22,6 +22,7 @@ from torch import nn
 from sklearn.metrics import accuracy_score
 
 from mkpyutils.fileutils import my_path
+from mk_mlutils.pipeline import batch, torchbatch
 
 
 def setSeed(seed):
@@ -170,6 +171,10 @@ def ourargs(title:str):
 						help='number of hidden states (default: 346)')
 	parser.add_argument('--m', type=int, default=468, metavar='N',
 						help='number of memory states (default: 468)')
+	parser.add_argument('--d', type = str, metavar="seq|ps",
+						default = 'seq', help = 'SeqMNIST or psMNIST')
+	parser.add_argument('--validate', type=int, default=5, help='validate interval')
+
 	#N_t = 784
 	#N_h = 346 # dimension of the hidden state
 	#N_m = 468 # dimension of the memory
