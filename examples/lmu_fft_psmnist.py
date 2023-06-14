@@ -364,6 +364,8 @@ class LMUFFT(nn.Module):
 
 		return h, h_n
 
+		def __str__(self):
+			return f"LMUFFT(hidden_size={self.hidden_size}, memory_size={self.memory_size}, theta={self.theta})"
 
 # ## Example: psMNIST
 

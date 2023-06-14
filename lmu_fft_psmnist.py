@@ -70,6 +70,9 @@ class LMUModel(nn.Module):
 		#x = self.dropout(h_n)
 		output = self.classifier(h_n)
 		return output # [batch_size, output_size]
+
+	def __str__(self):
+		return f"LMUModel(hidden_size={self.lmu.hidden_size}, memory_size={self.lmu.memory_size})"
 #end of LMUModel
 
 class LMUFFTModel(nn.Module):
@@ -94,9 +97,13 @@ class LMUFFTModel(nn.Module):
 		x = self.dropout(h_n)
 		output = self.classifier(x)
 		return output # [batch_size, output_size]
+
+	def __str__(self):
+		return f"LMUModelFFT(hidden_size={self.lmu_fft.hidden_size}, memory_size={self.lmu_fft.memory_size}, {self.lmu_fft})"
 #end of LMUFFTModel
 
 def getSeqMNISTtype(kind:str) -> str:
+	""" args.d """
 	valid = {'row', 'psMNIST', 'psLMU'}
 	return kind if kind in valid else 'psLMU'
 
@@ -163,6 +170,8 @@ if __name__ == "__main__":
 	else:	
 		N_h = 346 # dimension of the hidden state
 		N_m = 468 # dimension of the memory
+		#N_h = 212 # dimension of the hidden state
+		#N_m = 256 # dimension of the memory
 
 		model = LMUFFTModel(
 			input_size = N_x, 
@@ -174,6 +183,8 @@ if __name__ == "__main__":
 			learn_a = LEARN_A,
 			learn_b = LEARN_B
 		)
+
+	print(model)	
 	model = model.to(DEVICE)
 	countParameters(model)
 

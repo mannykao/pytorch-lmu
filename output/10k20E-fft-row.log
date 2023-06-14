@@ -1,5 +1,8 @@
 permute=row
 -----------
+N_h = 346 # dimension of the hidden state
+N_m = 468 # dimension of the memory
+
 Epoch: 01/10
 Train Loss: 1.958 | Train Acc: 42.44%
 Val. Loss: 1.192 |  Val. Acc: 67.83%
@@ -31,7 +34,7 @@ Epoch: 10/10
 Train Loss: 0.162 | Train Acc: 95.14%
 Val. Loss: 0.226 |  Val. Acc: 93.51%
 
-10k, 60k Test:
+10E, 60k Test:
 --------------
 Train Loss: 0.162 | Train Acc: 95.14%
 Val. Loss: 0.227 |  Val. Acc: 93.48%
@@ -72,3 +75,72 @@ Val. Loss: 0.191 |  Val. Acc: 94.83%
 --------------
 Train Loss: 0.070 | Train Acc: 97.91%
 Val. Loss: 0.190 |  Val. Acc: 94.78%
+
+=============================================================
+N_h = 212 # dimension of the hidden state
+N_m = 256 # dimension of the memory
+
+Epoch: 01/20
+Train Loss: 2.117 | Train Acc: 35.21%
+Val. Loss: 1.562 |  Val. Acc: 63.78%
+Epoch: 02/20
+Train Loss: 0.965 | Train Acc: 74.17%
+Val. Loss: 0.616 |  Val. Acc: 83.47%
+Epoch: 03/20
+Train Loss: 0.553 | Train Acc: 83.73%
+Val. Loss: 0.460 |  Val. Acc: 86.87%
+Epoch: 04/20
+Train Loss: 0.441 | Train Acc: 86.70%
+Val. Loss: 0.398 |  Val. Acc: 88.43%
+Epoch: 05/20
+Train Loss: 0.383 | Train Acc: 88.53%
+Val. Loss: 0.356 |  Val. Acc: 89.93%
+Epoch: 06/20
+Train Loss: 0.336 | Train Acc: 90.00%
+Val. Loss: 0.329 |  Val. Acc: 90.52%
+Epoch: 07/20
+Train Loss: 0.306 | Train Acc: 91.10%
+Val. Loss: 0.305 |  Val. Acc: 91.25%
+Epoch: 08/20
+Train Loss: 0.284 | Train Acc: 91.35%
+Val. Loss: 0.288 |  Val. Acc: 91.57%
+Epoch: 09/20
+Train Loss: 0.258 | Train Acc: 92.55%
+Val. Loss: 0.275 |  Val. Acc: 91.95%
+Epoch: 10/20
+Train Loss: 0.246 | Train Acc: 92.49%
+Val. Loss: 0.262 |  Val. Acc: 92.35%
+Epoch: 11/20
+Train Loss: 0.228 | Train Acc: 93.35%
+Val. Loss: 0.250 |  Val. Acc: 92.55%
+Epoch: 12/20
+Train Loss: 0.219 | Train Acc: 93.18%
+Val. Loss: 0.244 |  Val. Acc: 92.88%
+Epoch: 13/20
+Train Loss: 0.200 | Train Acc: 94.21%
+Val. Loss: 0.232 |  Val. Acc: 93.02%
+Epoch: 14/20
+Train Loss: 0.195 | Train Acc: 94.20%
+Val. Loss: 0.223 |  Val. Acc: 93.30%
+Epoch: 15/20
+Train Loss: 0.182 | Train Acc: 94.43%
+Val. Loss: 0.219 |  Val. Acc: 93.65%
+Epoch: 16/20
+Train Loss: 0.169 | Train Acc: 95.04%
+Val. Loss: 0.213 |  Val. Acc: 93.77%
+Epoch: 17/20
+Train Loss: 0.164 | Train Acc: 95.19%
+Val. Loss: 0.207 |  Val. Acc: 93.92%
+Epoch: 18/20
+Train Loss: 0.153 | Train Acc: 95.56%
+Val. Loss: 0.202 |  Val. Acc: 94.27%
+Epoch: 19/20
+Train Loss: 0.145 | Train Acc: 95.67%
+Val. Loss: 0.202 |  Val. Acc: 94.30%
+Epoch: 20/20
+Train Loss: 0.136 | Train Acc: 95.86%
+Val. Loss: 0.199 |  Val. Acc: 94.32%
+
+60k Test:
+Train Loss: 0.136 | Train Acc: 95.86%
+Val. Loss: 0.195 |  Val. Acc: 94.44%
