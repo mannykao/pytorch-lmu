@@ -28,6 +28,8 @@ from datasets.mnist import mnist
 from datasets.utils.xforms import GreyToFloat
 from mk_mlutils.dataset import datasetutils
 from mk_mlutils.pipeline import torchbatch
+from mk_mlutils.utils import torchutils
+
 
 from src.lmu2 import *
 from src.lmuapp import *
@@ -109,39 +111,30 @@ if __name__ == "__main__":
 	N_m = args.m 			#468 # dimension of the memory
 	N_validate = args.validate #validate interval, defaults to 5
 
+	SEED = 0
 	# Connect to GPU
-	DEVICE = initCuda()
+	DEVICE = torchutils.onceInit(kCUDA=True, seed=SEED)
 	print(f"{DEVICE}")
 
-	SEED = 0
-	setSeed(SEED)
-
-	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
-	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
-
 	#1: use SeqMNIST or psMNIST
-	if args.d == 'seq':
+	if args.d == 'seq':		#permute='psLMU'
 		print(f"SeqMNIST({mnist_dir})")
+		seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
+		seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
 		ds_train, ds_test = seqmnist_train, seqmnist_test
 	else:	
 		print(f"psMNIST({mnist_dir})")
-		transform = transforms.ToTensor()
-		mnist_train = datasets.MNIST(mnist_dir, train = True, download = True, transform = transform)
-		mnist_val   = datasets.MNIST(mnist_dir, train = False, download = True, transform = transform)
-
-		perm = load_permutation(__file__)
-		ds_train = psMNIST(mnist_train, perm)
-		ds_val   = psMNIST(mnist_val, perm)
-		ds_test  = ds_val  	#TODO:
+		ds_train = mnist.SeqMNIST(split="train", permute='psMNIST', imagepipeline=GreyToFloat())
+		ds_test  = mnist.SeqMNIST(split="test", permute='psMNIST', imagepipeline=GreyToFloat())
 
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
 	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.2, useCDF=True)
 
-	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = True)
+	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = False)
 	dl_test  = DataLoader(ds_test, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = False)
-	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = True)
+	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = False)
 
 	#create out batch builder
 	#dl_train = batch.Bagging(ds_train, batchsize=N_b, shuffle=False)

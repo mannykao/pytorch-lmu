@@ -17,12 +17,16 @@ import datasets.utils.projconfig as projconfig
 from datasets.mnist import mnist
 from datasets.utils.xforms import GreyToFloat
 
+from mk_mlutils.dataset import datasetutils
+
 from src.lmu2 import *
 from src.lmuapp import *
 
 kPlot=False
 
+
 def compare2datasets(dataset1, dataset2, kLabelsOnly=False) -> bool:
+	print(f"compare2datasets({getattr(dataset1, 'name', 'unknown')}, {getattr(dataset2, 'name', 'unknown')})")
 	result = True
 	for idx, entry1 in enumerate(dataset1):
 		entry2 = dataset2[idx]
@@ -68,4 +72,6 @@ if __name__ == "__main__":
 
 	#3: compare the 2 datasets entry by entry
 	compare2datasets(psmnist, seqmnist, kLabelsOnly=False)
+
+	ds_val = datasetutils.getBalancedSubset(mnist_val, fraction=.2, useCDF=True)
 

@@ -93,36 +93,32 @@ if __name__ == "__main__":
 	N_validate = args.validate #validate interval, defaults to 5
 
 	# Connect to GPU
-	DEVICE = initCuda()
-	print(f"{DEVICE}")
-
 	SEED = 0
-	setSeed(SEED)
+	#DEVICE = initCuda()
+	#setSeed(SEED)
+	DEVICE = torchutils.onceInit(kCUDA=True, seed=SEED)
+	print(f"{DEVICE}")
 
 	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
 	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
 
 	#1: use SeqMNIST or psMNIST
-	if args.d == 'seq':
+	if args.d == 'seq':		#permute='psLMU'
 		print(f"SeqMNIST({mnist_dir})")
 		ds_train, ds_test = seqmnist_train, seqmnist_test
 	else:	
 		print(f"psMNIST({mnist_dir})")
-		transform = transforms.ToTensor()
-		mnist_train = datasets.MNIST(mnist_dir, train = True, download = True, transform = transform)
-		mnist_val   = datasets.MNIST(mnist_dir, train = False, download = True, transform = transform)
-
-		perm = load_permutation(__file__)
-		ds_train = psMNIST(mnist_train, perm)
-		ds_val   = psMNIST(mnist_val, perm)
+		ds_train = mnist.SeqMNIST(split="train", permute='psMNIST', imagepipeline=GreyToFloat())
+		ds_test  = mnist.SeqMNIST(split="test", permute='psMNIST', imagepipeline=GreyToFloat())
 
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
-	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.2, useCDF=True)
+	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.1, useCDF=True)
 
-	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 2)
-	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = True, num_workers = 2)
+	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1)
+	dl_test  = DataLoader(ds_test, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = False)
+	dl_val   = DataLoader(ds_val, batch_size = N_b, shuffle = False, num_workers = 1)
 
 	# In[43]:
 	# Example of the data

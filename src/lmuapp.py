@@ -23,6 +23,7 @@ from sklearn.metrics import accuracy_score
 
 from mkpyutils.fileutils import my_path
 from mk_mlutils.pipeline import batch, torchbatch
+from mk_mlutils.utils import torchutils
 
 
 def setSeed(seed):

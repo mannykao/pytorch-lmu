@@ -1,0 +1,72 @@
+10k20E
+------
+Epoch: 01/20
+Train Loss: 1.926 | Train Acc: 48.34%
+Val. Loss: 1.041 |  Val. Acc: 76.00%
+Epoch: 02/20
+Train Loss: 0.665 | Train Acc: 81.55%
+Val. Loss: 0.499 |  Val. Acc: 85.68%
+Epoch: 03/20
+Train Loss: 0.444 | Train Acc: 87.19%
+Val. Loss: 0.412 |  Val. Acc: 88.17%
+Epoch: 04/20
+Train Loss: 0.374 | Train Acc: 88.95%
+Val. Loss: 0.372 |  Val. Acc: 88.95%
+Epoch: 05/20
+Train Loss: 0.328 | Train Acc: 90.44%
+Val. Loss: 0.347 |  Val. Acc: 89.92%
+Epoch: 06/20
+Train Loss: 0.298 | Train Acc: 91.17%
+Val. Loss: 0.320 |  Val. Acc: 90.82%
+Epoch: 07/20
+Train Loss: 0.265 | Train Acc: 92.34%
+Val. Loss: 0.303 |  Val. Acc: 91.20%
+Epoch: 08/20
+Train Loss: 0.242 | Train Acc: 92.86%
+Val. Loss: 0.288 |  Val. Acc: 91.45%
+Epoch: 09/20
+Train Loss: 0.220 | Train Acc: 93.50%
+Val. Loss: 0.273 |  Val. Acc: 92.02%
+Epoch: 10/20
+Train Loss: 0.198 | Train Acc: 94.05%
+Val. Loss: 0.262 |  Val. Acc: 92.15%
+Epoch: 11/20
+Train Loss: 0.184 | Train Acc: 94.49%
+Val. Loss: 0.247 |  Val. Acc: 92.68%
+Epoch: 12/20
+Train Loss: 0.165 | Train Acc: 94.97%
+Val. Loss: 0.235 |  Val. Acc: 92.98%
+Epoch: 13/20
+Train Loss: 0.158 | Train Acc: 95.14%
+Val. Loss: 0.227 |  Val. Acc: 93.22%
+Epoch: 14/20
+Train Loss: 0.145 | Train Acc: 95.65%
+Val. Loss: 0.218 |  Val. Acc: 93.62%
+Epoch: 15/20
+Train Loss: 0.132 | Train Acc: 96.02%
+Val. Loss: 0.213 |  Val. Acc: 93.65%
+Epoch: 16/20
+Train Loss: 0.121 | Train Acc: 96.22%
+Val. Loss: 0.207 |  Val. Acc: 93.72%
+Epoch: 17/20
+Train Loss: 0.112 | Train Acc: 96.73%
+Val. Loss: 0.203 |  Val. Acc: 93.95%
+Epoch: 18/20
+Train Loss: 0.108 | Train Acc: 96.71%
+Val. Loss: 0.199 |  Val. Acc: 94.10%
+Epoch: 19/20
+Train Loss: 0.095 | Train Acc: 97.13%
+Val. Loss: 0.194 |  Val. Acc: 94.18%
+Epoch: 20/20
+Train Loss: 0.091 | Train Acc: 97.08%
+Val. Loss: 0.194 |  Val. Acc: 94.48%
+
+Test:
+Train Loss: 0.091 | Train Acc: 97.08%
+Val. Loss: 0.188 |  Val. Acc: 94.61%
+
+10k40E
+------
+Test:
+Train Loss: 0.026 | Train Acc: 99.16%
+Val. Loss: 0.197 |  Val. Acc: 95.31%

@@ -5,6 +5,8 @@ Title: lmu2: extracted from the beginning of lmu_fft_psmnist.py. Same as src/lmu
 Created on Sun Apr 23 17:44:29 2023
 
 @author: Manny Ko
+
+TODO: most of the code is duplicated, we should merge it with lmu.py - mck.
 """
 import argparse
 import random
@@ -25,8 +27,9 @@ class psMNIST(Dataset):
 	""" Dataset that defines the psMNIST dataset, given the MNIST data and a fixed permutation """
 
 	def __init__(self, mnist, perm):
-		self.mnist = mnist # also a torch.data.Dataset object
-		self.perm  = perm
+		self.name = "psMNIST"
+		self.mnist = mnist 		# also a torch.data.Dataset object
+		self.perm  = perm 		# permutation table e.g. examples/permutation.pt to reproduce Volecker
 
 	def __len__(self):
 		return len(self.mnist)
