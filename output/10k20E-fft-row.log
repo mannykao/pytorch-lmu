@@ -1,0 +1,74 @@
+permute=row
+-----------
+Epoch: 01/10
+Train Loss: 1.958 | Train Acc: 42.44%
+Val. Loss: 1.192 |  Val. Acc: 67.83%
+Epoch: 02/10
+Train Loss: 0.765 | Train Acc: 78.14%
+Val. Loss: 0.551 |  Val. Acc: 84.07%
+Epoch: 03/10
+Train Loss: 0.466 | Train Acc: 86.01%
+Val. Loss: 0.413 |  Val. Acc: 88.08%
+Epoch: 04/10
+Train Loss: 0.360 | Train Acc: 89.34%
+Val. Loss: 0.355 |  Val. Acc: 89.74%
+Epoch: 05/10
+Train Loss: 0.309 | Train Acc: 91.01%
+Val. Loss: 0.315 |  Val. Acc: 91.05%
+Epoch: 06/10
+Train Loss: 0.265 | Train Acc: 92.09%
+Val. Loss: 0.285 |  Val. Acc: 92.07%
+Epoch: 07/10
+Train Loss: 0.229 | Train Acc: 93.09%
+Val. Loss: 0.265 |  Val. Acc: 92.53%
+Epoch: 08/10
+Train Loss: 0.204 | Train Acc: 93.99%
+Val. Loss: 0.250 |  Val. Acc: 92.83%
+Epoch: 09/10
+Train Loss: 0.182 | Train Acc: 94.51%
+Val. Loss: 0.238 |  Val. Acc: 93.38%
+Epoch: 10/10
+Train Loss: 0.162 | Train Acc: 95.14%
+Val. Loss: 0.226 |  Val. Acc: 93.51%
+
+10k, 60k Test:
+--------------
+Train Loss: 0.162 | Train Acc: 95.14%
+Val. Loss: 0.227 |  Val. Acc: 93.48%
+
+
+Epoch: 11/20
+Train Loss: 0.150 | Train Acc: 95.38%
+Val. Loss: 0.217 |  Val. Acc: 93.85%
+Epoch: 12/20
+Train Loss: 0.134 | Train Acc: 96.05%
+Val. Loss: 0.208 |  Val. Acc: 94.11%
+Epoch: 13/20
+Train Loss: 0.126 | Train Acc: 96.36%
+Val. Loss: 0.204 |  Val. Acc: 94.27%
+Epoch: 14/20
+Train Loss: 0.113 | Train Acc: 96.59%
+Val. Loss: 0.199 |  Val. Acc: 94.44%
+Epoch: 15/20
+Train Loss: 0.104 | Train Acc: 96.90%
+Val. Loss: 0.195 |  Val. Acc: 94.57%
+Epoch: 16/20
+Train Loss: 0.091 | Train Acc: 97.29%
+Val. Loss: 0.195 |  Val. Acc: 94.66%
+Epoch: 17/20
+Train Loss: 0.086 | Train Acc: 97.28%
+Val. Loss: 0.192 |  Val. Acc: 94.78%
+Epoch: 18/20
+Train Loss: 0.080 | Train Acc: 97.48%
+Val. Loss: 0.190 |  Val. Acc: 94.85%
+Epoch: 19/20
+Train Loss: 0.077 | Train Acc: 97.58%
+Val. Loss: 0.189 |  Val. Acc: 94.85%
+Epoch: 20/20
+Train Loss: 0.070 | Train Acc: 97.91%
+Val. Loss: 0.191 |  Val. Acc: 94.83%
+
+20E, 60k Test:
+--------------
+Train Loss: 0.070 | Train Acc: 97.91%
+Val. Loss: 0.190 |  Val. Acc: 94.78%

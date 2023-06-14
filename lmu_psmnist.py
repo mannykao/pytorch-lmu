@@ -94,22 +94,16 @@ if __name__ == "__main__":
 
 	# Connect to GPU
 	SEED = 0
-	#DEVICE = initCuda()
-	#setSeed(SEED)
 	DEVICE = torchutils.onceInit(kCUDA=True, seed=SEED)
 	print(f"{DEVICE}")
 
-	seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
-	seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
-
 	#1: use SeqMNIST or psMNIST
-	if args.d == 'seq':		#permute='psLMU'
-		print(f"SeqMNIST({mnist_dir})")
-		ds_train, ds_test = seqmnist_train, seqmnist_test
-	else:	
-		print(f"psMNIST({mnist_dir})")
-		ds_train = mnist.SeqMNIST(split="train", permute='psMNIST', imagepipeline=GreyToFloat())
-		ds_test  = mnist.SeqMNIST(split="test", permute='psMNIST', imagepipeline=GreyToFloat())
+	permute = getSeqMNISTtype(args.d)
+	print(f"SeqMNIST({mnist_dir}, permute={permute})")
+
+	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat())
+	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat())
+	ds_train, ds_test = seqmnist_train, seqmnist_test
 
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train

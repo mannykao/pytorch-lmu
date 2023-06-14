@@ -156,6 +156,10 @@ def losses(train_loss:float, train_acc:float, val_loss:float, val_acc:float):
 	print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
 	print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
 
+def getSeqMNISTtype(kind:str) -> str:
+	valid = {'row', 'psMNIST', 'psLMU'}
+	return kind if kind in valid else 'psLMU'
+	
 def ourargs(title:str):
 	parser = argparse.ArgumentParser(description=title,
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -175,8 +179,8 @@ def ourargs(title:str):
 						help='number of hidden states (default: 346)')
 	parser.add_argument('--m', type=int, default=468, metavar='N',
 						help='number of memory states (default: 468)')
-	parser.add_argument('--d', type = str, metavar="seq|ps",
-						default = 'seq', help = 'SeqMNIST or psMNIST')
+	parser.add_argument('--d', type = str, metavar="row|psMNIST|psLMU",
+						default = 'psLMU', help = 'SeqMNIST or psMNIST')
 	parser.add_argument('--validate', type=int, default=1, help='validate interval')
 
 	#N_t = 784
@@ -185,3 +189,4 @@ def ourargs(title:str):
 
 	args = parser.parse_args()
 	return args
+

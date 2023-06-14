@@ -96,6 +96,10 @@ class LMUFFTModel(nn.Module):
 		return output # [batch_size, output_size]
 #end of LMUFFTModel
 
+def getSeqMNISTtype(kind:str) -> str:
+	valid = {'row', 'psMNIST', 'psLMU'}
+	return kind if kind in valid else 'psLMU'
+
 
 if __name__ == "__main__":
 	title = "Parallel LMU with fft"
@@ -117,20 +121,17 @@ if __name__ == "__main__":
 	print(f"{DEVICE}")
 
 	#1: use SeqMNIST or psMNIST
-	if args.d == 'seq':		#permute='psLMU'
-		print(f"SeqMNIST({mnist_dir})")
-		seqmnist_train = mnist.SeqMNIST(split="train", permute='psLMU', imagepipeline=GreyToFloat())
-		seqmnist_test  = mnist.SeqMNIST(split="test", permute='psLMU', imagepipeline=GreyToFloat())
-		ds_train, ds_test = seqmnist_train, seqmnist_test
-	else:	
-		print(f"psMNIST({mnist_dir})")
-		ds_train = mnist.SeqMNIST(split="train", permute='psMNIST', imagepipeline=GreyToFloat())
-		ds_test  = mnist.SeqMNIST(split="test", permute='psMNIST', imagepipeline=GreyToFloat())
+	permute = getSeqMNISTtype(args.d)
+
+	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat())
+	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat())
+	ds_train, ds_test = seqmnist_train, seqmnist_test
+	print(f"{seqmnist_train}")
 
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
-	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.2, useCDF=True)
+	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.1, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = False)
 	dl_test  = DataLoader(ds_test, batch_size = N_b, shuffle = False, num_workers = 1, pin_memory = False)
@@ -146,6 +147,9 @@ if __name__ == "__main__":
 
 	# #### Model
 	if args.model == "lmu":
+		N_h = 212 # dimension of the hidden state
+		N_m = 256 # dimension of the memory
+
 		model = LMUModel(
 			input_size = N_x, 
 			output_size = N_c, 
@@ -157,6 +161,9 @@ if __name__ == "__main__":
 			learn_b = LEARN_B
 		)
 	else:	
+		N_h = 346 # dimension of the hidden state
+		N_m = 468 # dimension of the memory
+
 		model = LMUFFTModel(
 			input_size = N_x, 
 			output_size = N_c, 
