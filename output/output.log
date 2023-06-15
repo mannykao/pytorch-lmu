@@ -1,5 +1,8 @@
-lmu_psmnist, E=10
-----------------
+lmu_psmnist, E=10, 102,027 trainable parameters
+-----------------------------------------------
+N_h = 212 # dimension of the hidden state
+N_m = 256 # dimension of the memory
+
 Train Loss: 0.690 | Train Acc: 78.18%
 Val. Loss: 0.368 |  Val. Acc: 89.37%
 

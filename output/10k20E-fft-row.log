@@ -1,7 +1,8 @@
-permute=row
------------
+permute=row, 166,092 trainable parameters
+-----------------------------------------
 N_h = 346 # dimension of the hidden state
 N_m = 468 # dimension of the memory
+166,092 trainable parameters
 
 Epoch: 01/10
 Train Loss: 1.958 | Train Acc: 42.44%
@@ -76,9 +77,15 @@ Val. Loss: 0.191 |  Val. Acc: 94.83%
 Train Loss: 0.070 | Train Acc: 97.91%
 Val. Loss: 0.190 |  Val. Acc: 94.78%
 
+40E, 60k Test:
+-------------
+Train Loss: 0.020 | Train Acc: 99.38%
+Val. Loss: 0.217 |  Val. Acc: 95.30%
+
 =============================================================
 N_h = 212 # dimension of the hidden state
 N_m = 256 # dimension of the memory
+56,828 trainable parameters
 
 Epoch: 01/20
 Train Loss: 2.117 | Train Acc: 35.21%
@@ -144,3 +151,69 @@ Val. Loss: 0.199 |  Val. Acc: 94.32%
 60k Test:
 Train Loss: 0.136 | Train Acc: 95.86%
 Val. Loss: 0.195 |  Val. Acc: 94.44%
+
+Epoch: 21/40
+Train Loss: 0.133 | Train Acc: 95.95%
+Val. Loss: 0.194 |  Val. Acc: 94.42%
+Epoch: 22/40
+Train Loss: 0.131 | Train Acc: 95.91%
+Val. Loss: 0.192 |  Val. Acc: 94.42%
+Epoch: 23/40
+Train Loss: 0.122 | Train Acc: 96.07%
+Val. Loss: 0.190 |  Val. Acc: 94.67%
+Epoch: 24/40
+Train Loss: 0.117 | Train Acc: 96.31%
+Val. Loss: 0.188 |  Val. Acc: 94.57%
+Epoch: 25/40
+Train Loss: 0.112 | Train Acc: 96.40%
+Val. Loss: 0.186 |  Val. Acc: 94.75%
+Epoch: 26/40
+Train Loss: 0.105 | Train Acc: 96.63%
+Val. Loss: 0.182 |  Val. Acc: 94.82%
+Epoch: 27/40
+Train Loss: 0.100 | Train Acc: 96.89%
+Val. Loss: 0.180 |  Val. Acc: 95.03%
+Epoch: 28/40
+Train Loss: 0.097 | Train Acc: 96.79%
+Val. Loss: 0.178 |  Val. Acc: 94.93%
+Epoch: 29/40
+Train Loss: 0.095 | Train Acc: 96.86%
+Val. Loss: 0.180 |  Val. Acc: 94.80%
+Epoch: 30/40
+Train Loss: 0.086 | Train Acc: 97.26%
+Val. Loss: 0.178 |  Val. Acc: 94.97%
+Epoch: 31/40
+Train Loss: 0.085 | Train Acc: 97.31%
+Val. Loss: 0.178 |  Val. Acc: 95.05%
+Epoch: 32/40
+Train Loss: 0.085 | Train Acc: 97.35%
+Val. Loss: 0.177 |  Val. Acc: 95.17%
+Epoch: 33/40
+Train Loss: 0.075 | Train Acc: 97.73%
+Val. Loss: 0.180 |  Val. Acc: 94.93%
+Epoch: 34/40
+Train Loss: 0.080 | Train Acc: 97.52%
+Val. Loss: 0.179 |  Val. Acc: 95.13%
+Epoch: 35/40
+Train Loss: 0.077 | Train Acc: 97.42%
+Val. Loss: 0.176 |  Val. Acc: 95.00%
+Epoch: 36/40
+Train Loss: 0.071 | Train Acc: 97.67%
+Val. Loss: 0.175 |  Val. Acc: 95.17%
+Epoch: 37/40
+Train Loss: 0.070 | Train Acc: 97.78%
+Val. Loss: 0.179 |  Val. Acc: 95.23%
+Epoch: 38/40
+Train Loss: 0.072 | Train Acc: 97.69%
+Val. Loss: 0.180 |  Val. Acc: 95.10%
+Epoch: 39/40
+Train Loss: 0.066 | Train Acc: 97.64%
+Val. Loss: 0.179 |  Val. Acc: 95.05%
+Epoch: 40/40
+Train Loss: 0.066 | Train Acc: 97.93%
+Val. Loss: 0.178 |  Val. Acc: 95.13%
+
+40E 60k Test:
+-------------
+Train Loss: 0.066 | Train Acc: 97.93%
+Val. Loss: 0.174 |  Val. Acc: 95.52%

@@ -84,7 +84,8 @@ class LMUModel(nn.Module):
 if __name__ == "__main__":
 	title = "Sequential LMU (Voelker)"
 	mnist_dir = projconfig.getMNISTFolder()
-	print(f"{title}")
+	print(f"{title} is superced by 'lmu_fft_psmnist --model lmu")
+#	getch()
 
 	args = ourargs(title=title)
 	THETA = args.theta 		#784

@@ -6,6 +6,7 @@
 #
 # Exported from lmu_fft_psmnist.ipynb. Rewritten for more reuse and enhancements.
 #
+from collections import namedtuple
 import numpy as np
 import random
 
@@ -36,16 +37,33 @@ from src.lmuapp import *
 
 
 # In[35]:
-N_x = 1 # dimension of the input, a single pixel
+#LMU_config = namedtuple("LMU_config", [N_x, N_t, N_h, N_m, N_c, THETA, LEARN_A, LEARN_B])
+"""
+kLMU_config = LMU_config(
+	N_x,	# = 1 # dimension of the input, a single pixel
+	N_t,	# = 784
+	N_h,	# = 346 # dimension of the hidden state
+	N_m,	# = 468 # dimension of the memory
+	N_c,	# = 10 # number of classes 
+	THETA,	# = 784
+	LEARN_A,# = False
+	LEARN_B #= False
+)
+"""
+
+N_x = 1 	# dimension of the input, a single pixel
 N_t = 784
-N_h = 346 # dimension of the hidden state
-N_m = 468 # dimension of the memory
-N_c = 10 # number of classes 
+N_h = 212 # dimension of the hidden state
+N_m = 256 # dimension of the memory
+#N_h = 346	# dimension of the hidden state
+#N_m = 468	# dimension of the memory
+N_c = 10	# number of classes 
 THETA = 784
-N_b = 100 # batch size
+N_b = 100	# batch size
 N_epochs = 1 	#15
 LEARN_A = False
 LEARN_B = False
+
 
 # ### Model
 class LMUModel(nn.Module):
@@ -125,7 +143,6 @@ if __name__ == "__main__":
 	SEED = 0
 	# Connect to GPU
 	DEVICE = torchutils.onceInit(kCUDA=True, seed=SEED)
-	print(f"{DEVICE}")
 
 	#1: use SeqMNIST or psMNIST
 	permute = getSeqMNISTtype(args.d)
@@ -152,8 +169,9 @@ if __name__ == "__main__":
 	print("Label:", eg_label)
 	#dispSeq(eg_img)
 
-	# #### Model
+ 	# #### Model
 	if args.model == "lmu":
+		#  def __init__(self, units=212, order=256, theta=28**2):
 		N_h = 212 # dimension of the hidden state
 		N_m = 256 # dimension of the memory
 
@@ -168,10 +186,10 @@ if __name__ == "__main__":
 			learn_b = LEARN_B
 		)
 	else:	
-		N_h = 346 # dimension of the hidden state
-		N_m = 468 # dimension of the memory
-		#N_h = 212 # dimension of the hidden state
-		#N_m = 256 # dimension of the memory
+#		N_h = 346 # dimension of the hidden state
+#		N_m = 468 # dimension of the memory
+		N_h = 212 # dimension of the hidden state
+		N_m = 256 # dimension of the memory
 
 		model = LMUFFTModel(
 			input_size = N_x, 
@@ -219,6 +237,8 @@ if __name__ == "__main__":
 		losses(train_loss, train_acc, val_loss, val_acc)
 	#end of epochs	
 
+	print()
+	print("Final test:")
 	#use full test-set	
 	tst_loss, tst_acc = validate(DEVICE, model, dl_test, criterion)
 	losses(train_loss, train_acc, tst_loss, tst_acc)
