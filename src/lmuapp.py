@@ -175,10 +175,10 @@ def ourargs(title:str):
 						default = 'test', help = 'dataset used for training and testing')
 	parser.add_argument('--t', type=int, default=784, metavar='N',
 						help='number of time steps (default: 784)')
-	parser.add_argument('--h', type=int, default=346, metavar='N',
-						help='number of hidden states (default: 346)')
-	parser.add_argument('--m', type=int, default=468, metavar='N',
-						help='number of memory states (default: 468)')
+	parser.add_argument('--h', type=int, default=212, metavar='N',
+						help='number of hidden states (default: 212)')
+	parser.add_argument('--m', type=int, default=256, metavar='N',
+						help='number of memory states (default: 256)')
 	parser.add_argument('--d', type = str, metavar="row|psMNIST|psLMU",
 						default = 'psLMU', help = 'SeqMNIST or psMNIST')
 	parser.add_argument('--validate', type=int, default=1, help='validate interval')

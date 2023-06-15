@@ -123,13 +123,15 @@ class LMUFFTModel(nn.Module):
 def getSeqMNISTtype(kind:str) -> str:
 	""" args.d """
 	valid = {'row', 'psMNIST', 'psLMU'}
-	return kind if kind in valid else 'psLMU'
+	return kind if kind in valid else 'psLMU' 		#could use getattr()
 
 
 if __name__ == "__main__":
 	title = "Parallel LMU with fft"
 	mnist_dir = projconfig.getMNISTFolder()	#"/content/"
 	print(f"{title}")
+
+	kFashion = True		#fashionmist or mnist
 
 	args = ourargs(title=title)
 	THETA = args.theta 		#784
@@ -147,8 +149,8 @@ if __name__ == "__main__":
 	#1: use SeqMNIST or psMNIST
 	permute = getSeqMNISTtype(args.d)
 
-	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat())
-	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat())
+	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
+	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
 	ds_train, ds_test = seqmnist_train, seqmnist_test
 	print(f"{seqmnist_train}")
 
@@ -172,8 +174,8 @@ if __name__ == "__main__":
  	# #### Model
 	if args.model == "lmu":
 		#  def __init__(self, units=212, order=256, theta=28**2):
-		N_h = 212 # dimension of the hidden state
-		N_m = 256 # dimension of the memory
+		#N_h = 212 # dimension of the hidden state
+		#N_m = 256 # dimension of the memory
 
 		model = LMUModel(
 			input_size = N_x, 
@@ -188,8 +190,8 @@ if __name__ == "__main__":
 	else:	
 #		N_h = 346 # dimension of the hidden state
 #		N_m = 468 # dimension of the memory
-		N_h = 212 # dimension of the hidden state
-		N_m = 256 # dimension of the memory
+#		N_h = 212 # dimension of the hidden state
+#		N_m = 256 # dimension of the memory
 
 		model = LMUFFTModel(
 			input_size = N_x, 
