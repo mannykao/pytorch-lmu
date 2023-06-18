@@ -1,0 +1,12 @@
+Epoch: 01/02
+Train Loss: 2.117 | Train Acc: 35.21%
+Val. Loss: 1.562 |  Val. Acc: 63.78%
+Epoch: 02/02
+Train Loss: 0.965 | Train Acc: 74.17%
+Val. Loss: 0.616 |  Val. Acc: 83.47%
+Train Losses: 35.21%, 74.17%,
+Val Losses: 63.78%, 83.47%,
+
+Final test:
+Train Loss: 0.965 | Train Acc: 74.17%
+Val. Loss: 0.614 |  Val. Acc: 83.32%

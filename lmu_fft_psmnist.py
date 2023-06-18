@@ -32,10 +32,11 @@ from mk_mlutils.dataset import datasetutils
 from mk_mlutils.pipeline import torchbatch
 from mk_mlutils.utils import torchutils
 
-
-from src.lmu2 import *
+from src.lmufft import *
 from src.lmuapp import *
 
+
+kPlot=False
 
 # In[35]:
 #LMU_config = namedtuple("LMU_config", [N_x, N_t, N_h, N_m, N_c, THETA, LEARN_A, LEARN_B])
@@ -124,7 +125,7 @@ class LMUFFTModel(nn.Module):
 def getSeqMNISTtype(kind:str) -> str:
 	""" args.d """
 	valid = {'row', 'psMNIST', 'psLMU'}
-	return kind if kind in valid else 'psLMU' 		#could use getattr()
+	return kind if kind in valid else None 		#could use getattr()
 
 
 if __name__ == "__main__":
@@ -244,27 +245,28 @@ if __name__ == "__main__":
 		losses(train_loss, train_acc, val_loss, val_acc)
 	#end of epochs
 	accuracy_scores(train_accs, val_accs)
+	print()
 
-	print()
-	print("Final test:")
-	#use full test-set	
-	tst_loss, tst_acc = validate(DEVICE, model, dl_test, criterion)
-	losses(train_loss, train_acc, tst_loss, tst_acc)
-	print()
+	if args.testmode == 1:
+		print("Final test:")
+		#use full test-set	
+		tst_loss, tst_acc = validate(DEVICE, model, dl_test, criterion)
+		losses(train_loss, train_acc, tst_loss, tst_acc)
+		print()
 
 	# Learning curves
+	if kPlot:
+		plt.plot(range(N_epochs), train_losses)
+		plt.plot(range(N_epochs), val_losses)
+		plt.ylabel("Loss")
+		plt.xlabel("Epochs")
+		plt.legend(["Train", "Val."])
+		plt.show()
 
-	plt.plot(range(N_epochs), train_losses)
-	plt.plot(range(N_epochs), val_losses)
-	plt.ylabel("Loss")
-	plt.xlabel("Epochs")
-	plt.legend(["Train", "Val."])
-	plt.show()
-
-	plt.plot(range(N_epochs), train_accs)
-	plt.plot(range(N_epochs), val_accs)
-	plt.ylabel("Accuracy")
-	plt.xlabel("Epochs")
-	plt.legend(["Train", "Val."])
-	plt.show()
+		plt.plot(range(N_epochs), train_accs)
+		plt.plot(range(N_epochs), val_accs)
+		plt.ylabel("Accuracy")
+		plt.xlabel("Epochs")
+		plt.legend(["Train", "Val."])
+		plt.show()
 
