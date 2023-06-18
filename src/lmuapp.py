@@ -143,11 +143,10 @@ def validate(DEVICE, model, loader, criterion):
 			
 	# Loss
 	avg_epoch_loss = epoch_loss / len(loader)
+	end = time.time()
 
 	# Accuracy
 	epoch_acc = accuracy_score(y_true, y_pred)
-
-	end = time.time()
 	print(f"time:{(end - start):.2f} seconds")
 
 	return avg_epoch_loss, epoch_acc
@@ -155,6 +154,16 @@ def validate(DEVICE, model, loader, criterion):
 def losses(train_loss:float, train_acc:float, val_loss:float, val_acc:float):
 	print(f"Train Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%")
 	print(f"Val. Loss: {val_loss:.3f} |  Val. Acc: {val_acc*100:.2f}%")
+
+def accuracy_scores(train_acc:list, val_acc:list):
+	print("Train Losses: ", end='')
+	for t_acc in train_acc:
+		print(f"{t_acc*100:.2f}%, ", end='')
+	print("")	
+	print("Val Losses: ", end='')
+	for v_acc in val_acc:
+		print(f"{v_acc*100:.2f}%, ", end='')
+	print("")	
 
 def getSeqMNISTtype(kind:str) -> str:
 	valid = {'row', 'psMNIST', 'psLMU'}
@@ -179,8 +188,8 @@ def ourargs(title:str):
 						help='number of hidden states (default: 212)')
 	parser.add_argument('--m', type=int, default=256, metavar='N',
 						help='number of memory states (default: 256)')
-	parser.add_argument('--d', type = str, metavar="row|psMNIST|psLMU",
-						default = 'psLMU', help = 'SeqMNIST or psMNIST')
+	parser.add_argument('--p', type = str, metavar="row|psMNIST|psLMU",
+						default = 'psLMU', help = 'Permutation for SeqMNIST')
 	parser.add_argument('--validate', type=int, default=1, help='validate interval')
 
 	#N_t = 784

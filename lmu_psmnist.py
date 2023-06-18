@@ -99,7 +99,7 @@ if __name__ == "__main__":
 	print(f"{DEVICE}")
 
 	#1: use SeqMNIST or psMNIST
-	permute = getSeqMNISTtype(args.d)
+	permute = getSeqMNISTtype(args.p)
 	print(f"SeqMNIST({mnist_dir}, permute={permute})")
 
 	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat())

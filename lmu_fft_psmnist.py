@@ -147,7 +147,7 @@ if __name__ == "__main__":
 	DEVICE = torchutils.onceInit(kCUDA=True, seed=SEED)
 
 	#1: use SeqMNIST or psMNIST
-	permute = getSeqMNISTtype(args.d)
+	permute = getSeqMNISTtype(args.p)
 
 	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
 	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
@@ -204,9 +204,10 @@ if __name__ == "__main__":
 			learn_b = LEARN_B
 		)
 
-	print(model)	
+	print(model)
+	torchutils.dumpModelSize(model)
 	model = model.to(DEVICE)
-	countParameters(model)
+	#countParameters(model)
 
 	# #### Optimization
 	optimizer = optim.Adam(params = model.parameters())
@@ -237,7 +238,8 @@ if __name__ == "__main__":
 		val_accs.append(val_acc)
 
 		losses(train_loss, train_acc, val_loss, val_acc)
-	#end of epochs	
+	#end of epochs
+	accuracy_scores(train_accs, val_accs)
 
 	print()
 	print("Final test:")
