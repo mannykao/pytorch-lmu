@@ -26,6 +26,39 @@ from mk_mlutils.pipeline import batch, torchbatch
 from mk_mlutils.utils import torchutils
 
 
+	
+def ourargs(title:str):
+	parser = argparse.ArgumentParser(description=title,
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument('--model', type = str, metavar="lmu|fft",
+						default = 'fft', help = 'Sequential or Parallel LMU')
+	parser.add_argument('--batchsize', type=int, default=100, metavar='N',
+						help='input batch size for training (default: 100)')
+	parser.add_argument('--epochs', type=int, default=1, metavar='N',
+						help='number of epochs to train (default: 1)')
+	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
+						help='delay theta (default: 784)')
+	parser.add_argument('--dataset', type=str, default='fashion', choices=('fashion','mnist'), help='dataset'),
+	parser.add_argument('--trset', type = str, metavar="test<n>|train<n>",
+						default = 'test', help = 'dataset used for training and testing')
+	parser.add_argument('--t', type=int, default=784, metavar='N',
+						help='number of time steps (default: 784)')
+	parser.add_argument('--h', type=int, default=212, metavar='N',
+						help='number of hidden states (default: 212)')
+	parser.add_argument('--m', type=int, default=256, metavar='N',
+						help='number of memory states (default: 256)')
+	parser.add_argument('--p', type = str, metavar="None|row|psMNIST|psLMU",
+						default = 'row', help = 'Permutation for SeqMNIST')
+	parser.add_argument('--testmode', type=int, default=1, metavar='N', help='final test control')
+	parser.add_argument('--validate', type=int, default=1, help='validate interval')
+
+	#N_t = 784
+	#N_h = 346 # dimension of the hidden state
+	#N_m = 468 # dimension of the memory
+
+	args = parser.parse_args()
+	return args
+
 def setSeed(seed):
 	""" Set all seeds to ensure reproducibility """
 	random.seed(seed)
@@ -168,36 +201,49 @@ def accuracy_scores(train_acc:list, val_acc:list):
 def getSeqMNISTtype(kind:str) -> str:
 	valid = {'row', 'psMNIST', 'psLMU'}
 	return kind if kind in valid else 'psLMU'
-	
-def ourargs(title:str):
-	parser = argparse.ArgumentParser(description=title,
-                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument('--model', type = str, metavar="lmu|fft",
-						default = 'fft', help = 'Sequential or Parallel LMU')
-	parser.add_argument('--batchsize', type=int, default=100, metavar='N',
-						help='input batch size for training (default: 100)')
-	parser.add_argument('--epochs', type=int, default=1, metavar='N',
-						help='number of epochs to train (default: 1)')
-	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
-						help='delay theta (default: 784)')
-	parser.add_argument('--dataset', type=str, default='fashion', choices=('fashion','mnist'), help='dataset'),
-	parser.add_argument('--trset', type = str, metavar="test<n>|train<n>",
-						default = 'test', help = 'dataset used for training and testing')
-	parser.add_argument('--t', type=int, default=784, metavar='N',
-						help='number of time steps (default: 784)')
-	parser.add_argument('--h', type=int, default=212, metavar='N',
-						help='number of hidden states (default: 212)')
-	parser.add_argument('--m', type=int, default=256, metavar='N',
-						help='number of memory states (default: 256)')
-	parser.add_argument('--p', type = str, metavar="None|row|psMNIST|psLMU",
-						default = 'row', help = 'Permutation for SeqMNIST')
-	parser.add_argument('--testmode', type=int, default=1, metavar='N', help='final test control')
-	parser.add_argument('--validate', type=int, default=1, help='validate interval')
 
-	#N_t = 784
-	#N_h = 346 # dimension of the hidden state
-	#N_m = 468 # dimension of the memory
+def training(
+	device, 
+	model, 
+	dl_train, dl_val, dl_test,
+	optimizer, criterion, 
+	N_epochs:int, 
+	N_validate:int=1,
+	testmode:int=1,
+) -> tuple:
+	train_losses = []
+	train_accs = []
+	val_losses = []
+	val_accs = []
+	val_loss, val_acc = 0, 0
+	last_validate = -1
 
-	args = parser.parse_args()
-	return args
+	for epoch in range(N_epochs):
+		print(f"Epoch: {epoch+1:02}/{N_epochs:02}")
 
+		train_loss, train_acc = train(device, model, dl_train, optimizer, criterion)
+
+		#validate interval?
+		if ((epoch+1) % N_validate) == 0:
+			val_loss, val_acc = validate(device, model, dl_val, criterion)
+			last_validate = epoch
+
+		train_losses.append(train_loss)
+		train_accs.append(train_acc)
+		val_losses.append(val_loss)
+		val_accs.append(val_acc)
+
+		losses(train_loss, train_acc, val_loss, val_acc)
+	#end of epochs
+	accuracy_scores(train_accs, val_accs)
+	print()
+
+	if testmode == 1:
+		print("Final test:")
+		#use full test-set	
+		tst_loss, tst_acc = validate(device, model, dl_test, criterion)
+		losses(train_loss, train_acc, tst_loss, tst_acc)
+		print()
+
+	return train_loss, train_acc, val_loss, val_acc
+			

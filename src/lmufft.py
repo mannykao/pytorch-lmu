@@ -414,3 +414,59 @@ class LMUFFT(nn.Module):
 		h_n = h[:, -1, :] # [batch_size, hidden_size]
 
 		return h, h_n
+
+# ### Model
+class LMUModel(nn.Module):
+	""" A simple model for the psMNIST dataset consisting of a single LMU layer and a single dense classifier """
+	def __init__(self, 
+		input_size, 
+		output_size, 
+		hidden_size, 
+		memory_size, 
+		seq_len,		#not used (yet) by LMU() 
+		theta, 
+		learn_a = False, 
+		learn_b = False
+	):
+		super().__init__()
+		self.lmu = LMU(input_size, hidden_size, memory_size, theta, learn_a, learn_b, psmnist = True)
+		self.dropout = nn.Dropout(p = 0.5)
+		self.classifier = nn.Linear(hidden_size, output_size)
+
+	def forward(self, x):
+		_, (h_n, _) = self.lmu(x) # [batch_size, hidden_size]
+		#x = self.dropout(h_n)
+		output = self.classifier(h_n)
+		return output # [batch_size, output_size]
+
+	def __str__(self):
+		return f"LMUModel(hidden_size={self.lmu.hidden_size}, memory_size={self.lmu.memory_size})"
+#end of LMUModel
+
+class LMUFFTModel(nn.Module):
+	""" A simple model for the psMNIST dataset consisting of a single LMUFFT layer and a single dense classifier """
+	def __init__(self, 
+		input_size, 
+		output_size, 
+		hidden_size, 
+		memory_size, 
+		seq_len, 
+		theta,
+		learn_a = False,	#not used by LMUFFT (yet) 
+		learn_b = False		#not used by LMUFFT (yet)
+	):
+		super().__init__()
+		self.lmu_fft = LMUFFT(input_size, hidden_size, memory_size, seq_len, theta)
+		self.dropout = nn.Dropout(p = 0.5)
+		self.classifier = nn.Linear(hidden_size, output_size)
+
+	def forward(self, x):
+		_, h_n = self.lmu_fft(x) # [batch_size, hidden_size]
+		x = self.dropout(h_n)
+		output = self.classifier(x)
+		return output # [batch_size, output_size]
+
+	def __str__(self):
+		return f"LMUModelFFT(hidden_size={self.lmu_fft.hidden_size}, memory_size={self.lmu_fft.memory_size}, {self.lmu_fft})"
+#end of LMUFFTModel
+
