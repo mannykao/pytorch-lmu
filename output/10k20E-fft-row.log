@@ -148,7 +148,11 @@ Epoch: 20/20
 Train Loss: 0.136 | Train Acc: 95.86%
 Val. Loss: 0.199 |  Val. Acc: 94.32%
 
-60k Test:
+20E 60k Test:
+N_h = 212 # dimension of the hidden state
+N_m = 256 # dimension of the memory
+56,828 trainable parameters
+
 Train Loss: 0.136 | Train Acc: 95.86%
 Val. Loss: 0.195 |  Val. Acc: 94.44%
 
