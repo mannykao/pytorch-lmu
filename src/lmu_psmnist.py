@@ -35,8 +35,8 @@ from datasets.mnist import mnist
 from mk_mlutils.dataset import datasetutils
 from datasets.utils.xforms import GreyToFloat
 
-from src.lmufft import *
-from src.lmuapp import *
+from lmufft import *
+from lmuapp import *
 
 
 # ### Imports and Constants

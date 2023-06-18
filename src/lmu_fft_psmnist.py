@@ -32,8 +32,8 @@ from mk_mlutils.dataset import datasetutils
 from mk_mlutils.pipeline import torchbatch
 from mk_mlutils.utils import torchutils
 
-from src.lmufft import *
-from src.lmuapp import *
+from lmufft import *
+from lmuapp import *
 
 
 kPlot=False
@@ -151,7 +151,7 @@ def main(title:str):
 	criterion = nn.CrossEntropyLoss()
 	criterion = criterion.to(device)
 
-	training(device, model, 
+	train_losses, train_accs, val_losses, val_accs = training(device, model, 
 		dl_train, dl_val, dl_test,
 		optimizer, criterion, 
 		N_epochs, 
@@ -160,7 +160,7 @@ def main(title:str):
 	)
 
 	# Learning curves
-	if kPlot:
+	if args.plot:
 		plt.plot(range(N_epochs), train_losses)
 		plt.plot(range(N_epochs), val_losses)
 		plt.ylabel("Loss")

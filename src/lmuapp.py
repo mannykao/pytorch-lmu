@@ -51,11 +51,9 @@ def ourargs(title:str):
 						default = 'row', help = 'Permutation for SeqMNIST')
 	parser.add_argument('--testmode', type=int, default=1, metavar='N', help='final test control')
 	parser.add_argument('--validate', type=int, default=1, help='validate interval')
+	parser.add_argument('--plot', action='store_true', default=False, help='whether to plot the training and validate results.')
 
 	#N_t = 784
-	#N_h = 346 # dimension of the hidden state
-	#N_m = 468 # dimension of the memory
-
 	args = parser.parse_args()
 	return args
 
@@ -245,5 +243,5 @@ def training(
 		losses(train_loss, train_acc, tst_loss, tst_acc)
 		print()
 
-	return train_loss, train_acc, val_loss, val_acc
+	return train_losses, train_accs, val_losses, val_accs
 			

@@ -19,7 +19,7 @@ from datasets.utils.xforms import GreyToFloat
 
 from mk_mlutils.dataset import datasetutils
 
-from src.lmu2 import *
+from src.lmufft import *
 from src.lmuapp import *
 
 kPlot=False
