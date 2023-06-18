@@ -26,6 +26,7 @@ from scipy.signal import cont2discrete
 # mck:
 import datasets.utils.projconfig as projconfig
 from datasets.mnist import mnist
+from datasets.mnist.getdb import getMNIST
 from datasets.utils.xforms import GreyToFloat
 from mk_mlutils.dataset import datasetutils
 from mk_mlutils.pipeline import torchbatch
@@ -148,9 +149,12 @@ if __name__ == "__main__":
 
 	#1: use SeqMNIST or psMNIST
 	permute = getSeqMNISTtype(args.p)
+	print(f"{permute=}")
 
-	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
-	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
+	seqmnist_train = getMNIST(kind='seqmnist', split='train', imagepipeline=GreyToFloat(), kFashion=kFashion, permute=permute)
+	seqmnist_test  = getMNIST(kind='seqmnist', split='test', imagepipeline=GreyToFloat(), kFashion=kFashion, permute=permute)
+	#seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
+	#seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
 	ds_train, ds_test = seqmnist_train, seqmnist_test
 	print(f"{seqmnist_train}")
 
