@@ -57,28 +57,6 @@ def ourargs(title:str):
 	args = parser.parse_args()
 	return args
 
-def setSeed(seed):
-	""" Set all seeds to ensure reproducibility """
-	random.seed(seed)
-	np.random.seed(seed)
-	torch.manual_seed(seed)
-	torch.cuda.manual_seed(seed)
-	torch.cuda.manual_seed_all(seed)
-	torch.backends.cudnn.deterministic = True
-	torch.backends.cudnn.benchmark = False
-
-def initCuda():
-	# Connect to GPU
-	if torch.cuda.is_available():
-		DEVICE = "cuda"
-		# Clear cache if non-empty
-		torch.cuda.empty_cache()
-		# See which GPU has been allotted 
-		print(torch.cuda.get_device_name(torch.cuda.current_device()))
-	else:
-		DEVICE = "cpu"
-	return DEVICE	
-
 def countParameters(model):
 	""" Counts and prints the number of trainable and non-trainable parameters of a model """
 	trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -237,7 +215,7 @@ def training(
 	print()
 
 	if testmode == 1:
-		print("Final test:")
+		print(f"Final test: ({len(dl_test)*dl_test.batch_size})")
 		#use full test-set	
 		tst_loss, tst_acc = validate(device, model, dl_test, criterion)
 		losses(train_loss, train_acc, tst_loss, tst_acc)

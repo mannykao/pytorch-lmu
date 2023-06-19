@@ -107,6 +107,7 @@ def main(title:str):
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
+	#ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.1, useCDF=True)
 	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.1, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = False)
@@ -161,13 +162,15 @@ def main(title:str):
 
 	# Learning curves
 	if args.plot:
+		plt.figure(f"Losses for '{ds_train}'")
 		plt.plot(range(N_epochs), train_losses)
 		plt.plot(range(N_epochs), val_losses)
 		plt.ylabel("Loss")
 		plt.xlabel("Epochs")
 		plt.legend(["Train", "Val."])
-		plt.show()
+		#plt.show()
 
+		plt.figure(f"Accuracies for '{ds_train}'")
 		plt.plot(range(N_epochs), train_accs)
 		plt.plot(range(N_epochs), val_accs)
 		plt.ylabel("Accuracy")
