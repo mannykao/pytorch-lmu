@@ -107,7 +107,7 @@ def main(title:str):
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
-	#ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.1, useCDF=True)
+	#ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.4, useCDF=True)
 	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.1, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = False)

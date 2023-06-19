@@ -6,13 +6,14 @@ Created on Wed Feb 1 17:44:29 2023
 @author: Manny Ko.
 """
 import torch
-from src.lmu import LMU, LMUFFT
+import ssmutils-1.0
+from ssmutils.lmu import lmu, lmufft
 
 
 if __name__ == "__main__":
 	#test sequence copied from README.md
 
-	model = LMU(
+	model = lmu.LMU(
 		input_size = 1,
 		hidden_size = 212,
 		memory_size = 256,
@@ -24,7 +25,7 @@ if __name__ == "__main__":
 	output, (h_n, m_n) = model(x)
 	#print(h_n, m_n)
 
-	lmufft = LMUFFT(
+	lmufft = lmufft.LMUFFT(
 		input_size = 1,
 		hidden_size = 346,
 		memory_size = 468, 

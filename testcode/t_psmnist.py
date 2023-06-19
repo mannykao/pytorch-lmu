@@ -19,8 +19,8 @@ from datasets.utils.xforms import GreyToFloat
 
 from mk_mlutils.dataset import datasetutils
 
-from src.lmufft import *
-from src.lmuapp import *
+from lmufft import *
+from lmuapp import *
 
 kPlot=False
 
@@ -75,3 +75,5 @@ if __name__ == "__main__":
 
 	ds_val = datasetutils.getBalancedSubset(mnist_val, fraction=.2, useCDF=True)
 
+	dl_val = DataLoader(ds_val, batch_size = 100, shuffle = False, num_workers = 1, pin_memory = False)
+	print(dl_val.batch_size)
