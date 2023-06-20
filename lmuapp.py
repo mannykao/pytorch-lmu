@@ -80,6 +80,7 @@ def dispSeq(seq, rows = 8):
 
 def load_permutation(myfilepath:__file__) -> torch.Tensor:
 	permute_file = my_path(myfilepath)/"examples/permutation.pt"	# created using torch.randperm(784)
+#	print(f"{permute_file=}")
 	perm = torch.load(permute_file).long()
 	return perm
 

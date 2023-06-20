@@ -19,8 +19,8 @@ from datasets.utils.xforms import GreyToFloat
 
 from mk_mlutils.dataset import datasetutils
 
-from lmufft import *
-from lmuapp import *
+from lmu.fftlmu.lmufft import *
+from lmu.fftlmu.lmuapp import *
 
 kPlot=False
 
@@ -42,13 +42,15 @@ def compare2datasets(dataset1, dataset2, kLabelsOnly=False) -> bool:
 
 
 if __name__ == "__main__":
+	from pathlib import Path
+
 	mnist_dir = projconfig.getMNISTFolder()	#"/content/"
 	transform = transforms.ToTensor()
 	mnist_train = datasets.MNIST(mnist_dir, train = True, download = True, transform = transform)
 	mnist_val   = datasets.MNIST(mnist_dir, train = False, download = True, transform = transform)
 
 	#1: use lmu's psMNIST
-	perm = load_permutation(__file__)
+	perm = load_permutation(Path(__file__).parent)
 	ds_train = psMNIST(mnist_train, perm)
 	ds_val   = psMNIST(mnist_val, perm) 
 	psmnist = ds_val
