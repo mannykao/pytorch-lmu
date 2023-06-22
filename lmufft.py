@@ -453,11 +453,12 @@ class LMUFFTModel(nn.Module):
 		seq_len, 
 		theta,
 		learn_a = False,	#not used by LMUFFT (yet) 
-		learn_b = False		#not used by LMUFFT (yet)
+		learn_b = False,	#not used by LMUFFT (yet)
+		dropout = 0.5,
 	):
 		super().__init__()
 		self.lmu_fft = LMUFFT(input_size, hidden_size, memory_size, seq_len, theta)
-		self.dropout = nn.Dropout(p = 0.5)
+		self.dropout = nn.Dropout(p = dropout)
 		self.classifier = nn.Linear(hidden_size, output_size)
 
 	def forward(self, x):

@@ -67,10 +67,19 @@ LEARN_B = False
 class LMUModel(nn.Module):
 	""" A simple model for the psMNIST dataset consisting of a single LMU layer and a single dense classifier """
 
-	def __init__(self, input_size, output_size, hidden_size, memory_size, theta, learn_a = False, learn_b = False):
+	def __init__(self, 
+		input_size, 
+		output_size, 
+		hidden_size, 
+		memory_size, 
+		theta, 
+		learn_a = False, 
+		learn_b = False,
+		dropout = 0.5,
+	):
 		super(LMUModel, self).__init__()
 		self.lmu = LMU(input_size, hidden_size, memory_size, theta, learn_a, learn_b, psmnist = True)
-		self.dropout = nn.Dropout(p = 0.5)
+		self.dropout = nn.Dropout(p = dropout)
 		self.classifier = nn.Linear(hidden_size, output_size)
 
 	def forward(self, x):

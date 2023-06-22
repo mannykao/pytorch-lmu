@@ -82,6 +82,7 @@ def main(title:str):
 	THETA = args.theta 		#784
 	N_b = args.batchsize 	#100 # batch size
 	N_epochs = args.epochs 	#15
+	dropout = args.dropout 	#0.5
 	N_t = args.t 	 	 	#784
 	N_h = args.h 			#346 # dimension of the hidden state
 	N_m = args.m 			#468 # dimension of the memory
@@ -129,7 +130,8 @@ def main(title:str):
 			seq_len = N_t, 
 			theta = THETA,
 			learn_a = LEARN_A,
-			learn_b = LEARN_B
+			learn_b = LEARN_B,
+			dropout = dropout,
 		)
 	else:	
 		model = LMUFFTModel(
@@ -140,7 +142,8 @@ def main(title:str):
 			seq_len = N_t, 
 			theta = THETA,
 			learn_a = LEARN_A,
-			learn_b = LEARN_B
+			learn_b = LEARN_B,
+			dropout = dropout,
 		)
 
 	print(model)

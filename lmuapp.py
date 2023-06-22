@@ -36,6 +36,8 @@ def ourargs(title:str):
 						help='input batch size for training (default: 100)')
 	parser.add_argument('--epochs', type=int, default=1, metavar='N',
 						help='number of epochs to train (default: 1)')
+	parser.add_argument('--dropout', type=float, default=0.5, metavar='dropout fraction',
+						help='percentage of activation to dropout (default: 0.5)')
 	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
 						help='delay theta (default: 784)')
 	parser.add_argument('--dataset', type=str, default='fashion', choices=('fashion','mnist'), help='dataset'),
