@@ -1,0 +1,20 @@
+4E, p=row
+---------
+Train Loss: 0.441 | Train Acc: 86.70%
+Val. Loss: 0.398 |  Val. Acc: 88.43%
+Train Losses: 35.21%, 74.17%, 83.73%, 86.70%,
+Val Losses: 63.78%, 83.47%, 86.87%, 88.43%,
+
+4E, p=psMNIST
+-------------
+Train Loss: 0.525 | Train Acc: 84.16%
+Val. Loss: 0.462 |  Val. Acc: 87.18%
+Train Losses: 30.88%, 69.33%, 80.94%, 84.16%,
+Val Losses: 62.23%, 79.85%, 84.78%, 87.18%,
+
+4E, p=psLMU
+-----------
+Train Loss: 0.518 | Train Acc: 84.36%
+Val. Loss: 0.464 |  Val. Acc: 86.70%
+Train Losses: 27.71%, 68.42%, 80.52%, 84.36%,
+Val Losses: 60.10%, 80.23%, 84.53%, 86.70%,

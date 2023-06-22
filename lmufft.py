@@ -463,6 +463,7 @@ class LMUFFTModel(nn.Module):
 	def forward(self, x):
 		_, h_n = self.lmu_fft(x) # [batch_size, hidden_size]
 		x = self.dropout(h_n)
+		#x = h_n
 		output = self.classifier(x)
 		return output # [batch_size, output_size]
 

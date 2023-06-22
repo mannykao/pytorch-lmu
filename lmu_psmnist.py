@@ -31,7 +31,7 @@ from scipy.signal import cont2discrete
 #
 # mck:
 import datasets.utils.projconfig as projconfig
-from datasets.mnist import mnist
+from datasets.mnist import seqmnist
 from mk_mlutils.dataset import datasetutils
 from datasets.utils.xforms import GreyToFloat
 
@@ -102,8 +102,8 @@ if __name__ == "__main__":
 	permute = getSeqMNISTtype(args.p)
 	print(f"SeqMNIST({mnist_dir}, permute={permute})")
 
-	seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat())
-	seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat())
+	seqmnist_train = seqmnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat())
+	seqmnist_test  = seqmnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat())
 	ds_train, ds_test = seqmnist_train, seqmnist_test
 
 	if args.trset == 'test':

@@ -6,7 +6,7 @@ Created on Wed Feb 1 17:44:29 2023
 @author: Manny Ko.
 """
 import torch
-from lmu.fftlmu import lmu, lmufft
+from ssmutils.lmu.fftlmu import lmu, lmufft
 
 
 if __name__ == "__main__":

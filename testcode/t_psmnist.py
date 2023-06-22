@@ -19,8 +19,8 @@ from datasets.utils.xforms import GreyToFloat
 
 from mk_mlutils.dataset import datasetutils
 
-from lmu.fftlmu.lmufft import *
-from lmu.fftlmu.lmuapp import *
+from ssmutils.lmu.fftlmu.lmufft import *
+from ssmutils.lmu.fftlmu.lmuapp import *
 
 kPlot=False
 

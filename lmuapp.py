@@ -84,20 +84,19 @@ def load_permutation(myfilepath:__file__) -> torch.Tensor:
 	perm = torch.load(permute_file).long()
 	return perm
 
-def train(DEVICE, model, loader, optimizer, criterion):
+def train(DEVICE, model, loader, optimizer, criterion, kEmpty=False):
 	""" A single training epoch on the psMNIST data """
 	epoch_loss = 0
 	y_pred = []
 	y_true = []
 	
-	torch.cuda.empty_cache()	#mck: just once/epoch
+	if kEmpty: torch.cuda.empty_cache()	#mck: just once/epoch
 	start = time.time()
 
 	model.train()
 	for batch, labels in tqdm(loader):
 
 #		torch.cuda.empty_cache()		#mck: don't do this in inner loop - saved 4.7s/iter (10k)
-
 		batch = batch.to(DEVICE)
 		labels = labels.long().to(DEVICE)
 
@@ -125,13 +124,13 @@ def train(DEVICE, model, loader, optimizer, criterion):
 
 	return avg_epoch_loss, epoch_acc	
 
-def validate(DEVICE, model, loader, criterion):
+def validate(DEVICE, model, loader, criterion, kEmpty=False):
 	""" A single validation epoch on the psMNIST data """
 	epoch_loss = 0
 	y_pred = []
 	y_true = []
 
-	torch.cuda.empty_cache()	#mck: just once/epoch
+	if kEmpty: torch.cuda.empty_cache()	#mck: just once/epoch
 	start = time.time()
 	
 	model.eval()

@@ -25,7 +25,7 @@ from scipy.signal import cont2discrete
 #
 # mck:
 import datasets.utils.projconfig as projconfig
-from datasets.mnist import mnist
+#from datasets.mnist import mnist
 from datasets.mnist.getdb import getMNIST
 from datasets.utils.xforms import GreyToFloat
 from mk_mlutils.dataset import datasetutils
@@ -107,7 +107,7 @@ def main(title:str):
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
-	#ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.1, useCDF=True)
+	ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.1, useCDF=True)
 	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.1, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = False)
