@@ -27,7 +27,8 @@ from scipy.signal import cont2discrete
 import datasets.utils.projconfig as projconfig
 #from datasets.mnist import mnist
 from datasets.mnist.getdb import getMNIST
-from datasets.utils.xforms import GreyToFloat
+from datasets.cifar10 import cifar10, seqcifar10
+from datasets.utils.xforms import GreyToFloat, BaseXform, NullXform, NullLabelXform
 from mk_mlutils.dataset import datasetutils
 from mk_mlutils.pipeline import torchbatch
 from mk_mlutils.utils import torchutils
@@ -69,8 +70,20 @@ LEARN_B = False
 
 def getSeqMNISTtype(kind:str) -> str:
 	""" args.d """
-	valid = {'row', 'psMNIST', 'psLMU'}
+	valid = {'row', 'psMNIST', 'psLMU', 'pixel'}
 	return kind if kind in valid else None 		#could use getattr()
+
+def getSeqCifar10(
+	imagepipeline:BaseXform=NullXform(),
+	labelpipeline:BaseXform=NullLabelXform(),
+	colorspace:str = "grayscale",
+	permute=None,
+):
+	train = cifar10.Cifar10Dataset(subset='train')
+	test  = cifar10.Cifar10Dataset(subset='test')
+	seqtrain = seqcifar10.SeqCifar10(dataset=train, permute=permute)
+	seqtest  = seqcifar10.SeqCifar10(dataset=test, permute=permute)
+	return seqtrain, seqtest
 
 def main(title:str):
 	mnist_dir = projconfig.getMNISTFolder()	#"/content/"
@@ -84,8 +97,8 @@ def main(title:str):
 	N_epochs = args.epochs 	#15
 	dropout = args.dropout 	#0.5
 	N_t = args.t 	 	 	#784
-	N_h = args.h 			#346 # dimension of the hidden state
-	N_m = args.m 			#468 # dimension of the memory
+	N_h = args.h 			#346/212 # dimension of the hidden state
+	N_m = args.m 			#468/256 # dimension of the memory
 	N_validate = args.validate #validate interval, defaults to 5
 
 	SEED = 0
@@ -93,22 +106,26 @@ def main(title:str):
 	device = torchutils.onceInit(kCUDA=True, seed=SEED)
 
 	#1: use SeqMNIST or psMNIST
-	dataset = args.dataset 		#fashion|mnist
+	dataset = args.dataset 		#fashion|mnist|cifar10
 	kFashion = (dataset == 'fashion')
 	permute = getSeqMNISTtype(args.p)
 	print(f"{permute=}")
 
-	seqmnist_train = getMNIST(kind='seqmnist', split='train', imagepipeline=GreyToFloat(), kFashion=kFashion, permute=permute)
-	seqmnist_test  = getMNIST(kind='seqmnist', split='test', imagepipeline=GreyToFloat(), kFashion=kFashion, permute=permute)
-	#seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
-	#seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
-	ds_train, ds_test = seqmnist_train, seqmnist_test
+	if dataset == 'cifar10':
+		seqmnist_train, seqmnist_test =	getSeqCifar10(permute=permute)
+	else:	
+		seqmnist_train = getMNIST(kind='seqmnist', split='train', imagepipeline=GreyToFloat(), kFashion=kFashion, permute=permute)
+		seqmnist_test  = getMNIST(kind='seqmnist', split='test', imagepipeline=GreyToFloat(), kFashion=kFashion, permute=permute)
+		#seqmnist_train = mnist.SeqMNIST(split="train", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
+		#seqmnist_test  = mnist.SeqMNIST(split="test", permute=permute, imagepipeline=GreyToFloat(), kFashion=kFashion)
 	print(f"{seqmnist_train}")
+
+	ds_train, ds_test = seqmnist_train, seqmnist_test
 
 	if args.trset == 'test':
 		ds_train, ds_test = ds_test, ds_train
 
-	ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.1, useCDF=True)
+	ds_train = datasetutils.getBalancedSubset(ds_train, fraction=.2, useCDF=True)
 	ds_val = datasetutils.getBalancedSubset(ds_test, fraction=.1, useCDF=True)
 
 	dl_train = DataLoader(ds_train, batch_size = N_b, shuffle = True, num_workers = 1, pin_memory = False)
@@ -118,16 +135,20 @@ def main(title:str):
 	#create out batch builder
 	#dl_train = batch.Bagging(ds_train, batchsize=N_b, shuffle=False)
 
+	N_t = seqmnist_train.shape[0] 	#number of time-steps
+	print(f"{N_t=} {THETA=}")
+	#THETA = N_t
+
  	# #### Model
 	if args.model == "lmu":
 		#  def __init__(self, units=212, order=256, theta=28**2):
 
 		model = LMUModel(
-			input_size = N_x, 
+			input_size = N_x,	#1 
 			output_size = N_c, 
 			hidden_size = N_h,	#212: dimension of the hidden state 
 			memory_size = N_m,	#256: dimension of the memory 
-			seq_len = N_t, 
+			seq_len = N_t,		#784: 
 			theta = THETA,
 			learn_a = LEARN_A,
 			learn_b = LEARN_B,
@@ -135,11 +156,11 @@ def main(title:str):
 		)
 	else:	
 		model = LMUFFTModel(
-			input_size = N_x, 
+			input_size = N_x,	#1  
 			output_size = N_c, 
 			hidden_size = N_h,	#212: dimension of the hidden state 
 			memory_size = N_m,	#256: dimension of the memory 
-			seq_len = N_t, 
+			seq_len = N_t,		#784: 
 			theta = THETA,
 			learn_a = LEARN_A,
 			learn_b = LEARN_B,

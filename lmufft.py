@@ -357,7 +357,7 @@ class LMUFFT(nn.Module):
 		# Convert to discrete
 		A, B, C, D, dt = cont2discrete( 	#scipy.signal - nengo.filter_design has well documented implementation too - mck
 			system = (A, B, C, D), 
-			dt = 1.0, 
+			dt = 1.0,			#according to https://arxiv.org/abs/2206.12037 - should always be 1 
 			method = "zoh"		#zero-order hold
 		)
 

@@ -40,7 +40,7 @@ def ourargs(title:str):
 						help='percentage of activation to dropout (default: 0.5)')
 	parser.add_argument('--theta', type=int, default=784, metavar='delay/window size',
 						help='delay theta (default: 784)')
-	parser.add_argument('--dataset', type=str, default='fashion', choices=('fashion','mnist'), help='dataset'),
+	parser.add_argument('--dataset', type=str, default='mnist', choices=('fashion','mnist', 'cifar10'), help='dataset'),
 	parser.add_argument('--trset', type = str, metavar="test<n>|train<n>",
 						default = 'test', help = 'dataset used for training and testing')
 	parser.add_argument('--t', type=int, default=784, metavar='N',
@@ -49,7 +49,10 @@ def ourargs(title:str):
 						help='number of hidden states (default: 212)')
 	parser.add_argument('--m', type=int, default=256, metavar='N',
 						help='number of memory states (default: 256)')
-	parser.add_argument('--p', type = str, metavar="None|row|psMNIST|psLMU",
+	#N_h = 346 # dimension of the hidden state
+	#N_m = 468 # dimension of the memory
+
+	parser.add_argument('--p', type = str, metavar="None|row|psMNIST|psLMU|pixel",
 						default = 'row', help = 'Permutation for SeqMNIST')
 	parser.add_argument('--testmode', type=int, default=1, metavar='N', help='final test control')
 	parser.add_argument('--validate', type=int, default=1, help='validate interval')
